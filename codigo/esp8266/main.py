@@ -28,7 +28,7 @@ async def main():
 
     exit_handler = ExitHandler()
     serial_handler = SerialHandler(("", lambda: None))
-    await uasyncio.create_task(serial_handler.run())
+    uasyncio.create_task(serial_handler.run())
 
     print("Chegou aq")
     ir_pin = Pin(5, Pin.OUT)       # GPIO5 = D1, ir = interrupt
@@ -54,6 +54,4 @@ if __name__ == "__main__":
 
 
 # TODO classe para leitor de sensor, que fica lendo a uma taxa constante
-# TODO classe para comunicação serial
-#  que aceita uma lista de comandos e uma lista de callbacks
 # TODO classe do controlador, que usa info do leitor do sensor
