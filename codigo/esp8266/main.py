@@ -53,5 +53,5 @@ if __name__ == "__main__":
     uasyncio.run(main())
 
 
-# TODO classe para leitor de sensor, que fica lendo a uma taxa constante
 # TODO classe do controlador, que usa info do leitor do sensor
+# TODO integração com web
