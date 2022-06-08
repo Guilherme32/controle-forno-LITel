@@ -15,7 +15,7 @@ class SensorReader:
     def get_temperature(self, index):
         """Pega a temperatura lida pelo sensor de indice 'index'"""
 
-        voltage = self.readings[index] * 2 * 1000/1024  # *2 pq usa divisor
+        voltage = self.readings[index] * 2 / 1024  # *2 pq usa divisor
         return voltage / 0.01       # Sensibilidade no datasheet
 
     def set_control_pins(self, value):
