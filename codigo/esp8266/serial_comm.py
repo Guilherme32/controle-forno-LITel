@@ -13,7 +13,7 @@ class SerialHandler:
         self.poll = select.poll()
         self.poll.register(sys.stdin, select.POLLIN)
 
-        self.commands = commands
+        self.commands = list(commands)
         self.command_prefix = command_prefix
         self.command_max_size = command_max_size
 
@@ -24,15 +24,24 @@ class SerialHandler:
         quando um caracter novo chega.
 
         Nota: Como só é considerado a partir do momento em que o prefixo foi
-        recebido, o tamanho mínimo nessa função é 2. """
+        recebido, o tamanho mínimo nessa função é 2.
+        """
 
         _msg = self.msg[1:]
         if len(_msg) > self.command_max_size:
             self.msg = ""
         else:
             for command in self.commands:
-                if command[0] == _msg:
-                    command[1]()
+                if command[0] in _msg:
+                    if command[1](_msg):
+                        self.msg = ""
+
+    def add_command(self, name, function):
+        """ Adiciona um comando. O nome e uma string com a mensagem para
+        chamar o comando, a função deve receber um str e retornar um bool.
+        Deve ser True se funcionou e False se o comando for inválido.
+        """
+        self.commands.append((name, function))
 
     async def run(self):
         """ Roda a comunicação. Espera caracteres na entrada do sistema. Nas
