@@ -38,6 +38,3 @@ class SensorReader:
         while True:
             self.read_temperatures()
             await sleep_ms(self.read_period)
-
-# TODO testar
-# Untested, tem que esperar o multiplex chegar
