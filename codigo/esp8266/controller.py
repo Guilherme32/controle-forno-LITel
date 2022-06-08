@@ -1,23 +1,35 @@
+# TODO implementar o controlador
+
 from machine import Pin
+from micropython import native
 
 
 class Controller:
-    def __init__(self, pins, read_function, period=120):
-        self.pins = tuple(Pin(pin, Pin.OUT) for pin in pins)
-        for pin in self.pins:
+    def __init__(self, interrupt_pin, output_pins, read_function, period=120,
+                 max_target=140):
+        self.output_pins = tuple(Pin(pin, Pin.OUT) for pin in output_pins)
+        for pin in self.output_pins:
             pin.value(0)
+
+        # Interrupcao da deteccao de zero
+        self.pir = Pin(interrupt_pin, Pin.IN)
+        self.pir.irq(self.send_power, Pin.IRQ_RISING)
 
         self.read_sensor = read_function
         self.period = period
                             # ligado, desligado
-        self.power_ratio = (1, self.period - 1)    # deve ter pelo menos 1 em cada lado
+        self.power_ratio = (0, self.period)
         self.power_counter = 0
         self.cycles = 0
 
-        self.control = True
+        self.control = False
         self.set_point = 0
 
-    def send_power(self):
+        self.max_target = max_target
+
+    @native
+    def send_power(self, _: Pin):
+        """ Chamado no interrupt da deteccao de zero """
         if self.cycles == self.period:
             self.cycles = 0
             self.update_ratio()
@@ -31,13 +43,15 @@ class Controller:
 
         self.cycles += 1
 
+    @native
     def update_ratio(self):
         if self.control:
             # Decide
             pass
 
+    @native
     def set_pins(self, value):
-        for pin in self.pins:
+        for pin in self.output_pins:
             pin.value(value)
 
     def set_ratio(self, ratio: tuple):
@@ -65,3 +79,58 @@ class Controller:
 
         if self.power_counter < - self.power_ratio[1]:
             self.power_counter = - self.power_ratio[1]
+
+    def shutdown(self):
+        """ Desliga o controlador e a carga """
+        self.control = False
+        self.power_counter = 0
+        self.power_ratio = (0, self.period)
+        self.set_pins(0)
+
+    def set_ratio_command(self, command):
+        """ Callback para o comando setp. Seta a relacao de potencia na saida.
+        E esperado 3 digitos apos o setp, de 000 a periodo (120 por padrao),
+        indicando o tempo ligado.
+        """
+        if len(command) < 7:  # Ainda não completou o comando
+            return False
+
+        on_time = command[4:]
+        try:
+            on_time = int(on_time)
+        except ValueError:
+            print("Comando invalido. Deve ser 'setpXXX', onde XXX e o tempo "
+                  "ligado, em ciclos.")
+            return True
+
+        if 0 <= on_time < self.period:
+            self.set_ratio((on_time, self.period - on_time))
+            print("Relacao atualizada")
+        else:
+            print("Valor invalido. O tempo ligado deve estas entre 0 e periodo"
+                  " maximo (120 por padrao)")
+        return True
+
+    def set_target_command(self, command):
+        """ Callback para o comando sett. Seta a temperatura alvo do sistema.
+        E esperado 5 caracteres apos o sett, no formato XXX.X, onde esse valor
+        e a temperatura em ºC, com precisao de 1 casa decimal
+        """
+        if len(command) < 9:  # Ainda não completou o comando
+            return False
+
+        target = command[4:]
+        try:
+            target = float(target)
+        except ValueError:
+            print("Comando invalido. Deve ser 'settXXX.X', onde XXX.X e a"
+                  "temperatura alvo, em ºC")
+            return True
+
+        if 0 <= target < self.max_target:
+            self.set_target(target)
+            print("Set point atualizado")
+        else:
+            print("Valor invalido. O tempo ligado deve estas entre 0 e a "
+                  "temperatura maxima (140ºC por padrao)")
+        return True

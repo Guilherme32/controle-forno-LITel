@@ -9,7 +9,7 @@ class SerialHandler:
     def __init__(self,
                  commands,         # type: Tuple[str, Callable]
                  command_prefix="!",
-                 command_max_size=8):
+                 command_max_size=10):
         self.poll = select.poll()
         self.poll.register(sys.stdin, select.POLLIN)
 

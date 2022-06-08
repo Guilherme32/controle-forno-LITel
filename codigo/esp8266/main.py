@@ -8,6 +8,9 @@ from interrupt_exit import ExitHandler
 from serial_comm import SerialHandler
 from network_handler import NetworkHandler
 from sensor_reader import SensorReader
+from controller import Controller
+
+gc.collect()
 
 
 async def main():
@@ -25,14 +28,18 @@ async def main():
     commands.append(("sensor", sensor_reader.reading_command))
     uasyncio.create_task(sensor_reader.run())
 
+    controller = Controller(5, (4, 2), lambda: sensor_reader.readings[4])
+    commands.append(("sett", controller.set_target_command))
+    commands.append(("setp", controller.set_ratio_command))
+
     serial_handler = SerialHandler(commands)
     uasyncio.create_task(serial_handler.run())
 
-    ir_pin = Pin(5, Pin.OUT)       # GPIO5 = D1, ir = interrupt
-    machine.mem32[0x6000033c] |= 3 << 7     # de interrupt nas duas bordas
+    gc.collect()
 
     while True:
         if exit_handler.pressed_button:
+            controller.shutdown()
             exit_handler.exit_program()
 
         await uasyncio.sleep_ms(100)
