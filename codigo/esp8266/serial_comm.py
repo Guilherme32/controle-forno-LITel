@@ -7,7 +7,7 @@ from uasyncio import sleep_ms
 
 class SerialHandler:
     def __init__(self,
-                 *commands,         # type: Tuple[str, Callable]
+                 commands,         # type: Tuple[str, Callable]
                  command_prefix="!",
                  command_max_size=8):
         self.poll = select.poll()

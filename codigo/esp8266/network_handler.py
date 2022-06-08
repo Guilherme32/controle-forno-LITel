@@ -7,8 +7,12 @@ import network
 class NetworkHandler:
     def __init__(self, ap_ssid="forno-litel",
                  ap_password="787Cu7kg",
+                 port=8081,
                  tries=10) -> None:
-        
+
+        self.ap_ssid = ap_ssid
+        self.ap_password = ap_password
+
         self.ap = network.WLAN(network.AP_IF)
         self.ap.config(essid=ap_ssid,
                        password=ap_password)
@@ -19,6 +23,8 @@ class NetworkHandler:
 
         self.sta = network.WLAN(network.STA_IF)
         self.sta.active(False)
+
+        self.port = port
 
         self.max_tries = tries
         self.tries = 0
@@ -68,9 +74,22 @@ class NetworkHandler:
             await uasyncio.sleep(10)
 
     def ap_info(self):
-        return self.ap.ifconfig()
+        ifconfig = self.ap.ifconfig()
+        return f"AP: SSID: {self.ap_ssid}    Senha: {self.ap_password}    " \
+               + f"IP: {ifconfig}"
 
     def sta_info(self):
-        return self.sta.config() \
-            if self.sta.isconnected() \
-            else None
+        if self.sta.isconnected():
+            ifconfig = self.sta.ifconfig()
+            return f"STA: SSID: {self.sta_ssid}    IP: {ifconfig}"
+
+        return "STA desconectado"
+
+    def all_info(self):
+        return f"{self.ap_info()}\n" \
+               f"{self.sta_info()}\n" \
+               f"Escutando na porta {self.port}"
+
+    def info_command(self, _):
+        print(self.all_info())
+        return True
