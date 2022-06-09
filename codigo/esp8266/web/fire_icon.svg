@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   enable-background="new 0 0 24 24"
+   height="24px"
+   viewBox="0 0 24 24"
+   width="24px"
+   fill="#000000"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="fire_icon.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2478"
+     inkscape:window-height="1055"
+     id="namedview12"
+     showgrid="false"
+     inkscape:zoom="18.520833"
+     inkscape:cx="24.685969"
+     inkscape:cy="5.1601134"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10"
+     inkscape:document-rotation="0" />
+  <g
+     id="g4">
+    <rect
+       fill="none"
+       height="24"
+       width="24"
+       y="0"
+       id="rect2" />
+  </g>
+  <g
+     id="g8"
+     style="fill:#ff212a;fill-opacity:1;stroke:#00004b;stroke-width:1.17603;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     transform="matrix(1.1063031,0,0,1.1045516,-1.2889674,-0.97673885)">
+    <path
+       d="M 19.48,12.35 C 17.91,8.27 12.32,8.05 13.67,2.12 13.77,1.68 13.3,1.34 12.92,1.57 9.29,3.71 6.68,8 8.87,13.62 9.05,14.08 8.51,14.51 8.12,14.21 6.31,12.84 6.12,10.87 6.28,9.46 6.34,8.94 5.66,8.69 5.37,9.12 4.69,10.16 4,11.84 4,14.37 c 0.38,5.6 5.11,7.32 6.81,7.54 2.43,0.31 5.06,-0.14 6.95,-1.87 2.08,-1.93 2.84,-5.01 1.72,-7.69 z m -9.28,5.03 c 1.44,-0.35 2.18,-1.39 2.38,-2.31 0.33,-1.43 -0.96,-2.83 -0.09,-5.09 0.33,1.87 3.27,3.04 3.27,5.08 0.08,2.53 -2.66,4.7 -5.56,2.32 z"
+       id="path6"
+       style="fill:#ff212a;fill-opacity:1;stroke:#00004b;stroke-width:1.17603;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

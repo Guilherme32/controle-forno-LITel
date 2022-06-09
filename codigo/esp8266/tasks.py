@@ -48,3 +48,40 @@ def rm(c, filename):
     command = f"ampy -b 115200 -p COM3 rm {filename}"
     print(f"> {command}")
     c.run(command)
+
+
+@task()
+def mkdir(c, dirname):
+    command = f"ampy -b 115200 -p COM3 mkdir {dirname}"
+    print(f"> {command}")
+    c.run(command)
+
+
+@task()
+def send_all(c):
+    try:
+        rm(c, "main.py")
+    except:
+        pass
+
+    send(c, "controller.py", _compile=True)
+    send(c, "interrupt_exit.py", _compile=True)
+    send(c, "logging.py", _compile=True)
+    send(c, "network_handler.py", _compile=True)
+    send(c, "sensor_reader.py", _compile=True)
+    send(c, "serial_comm.py", _compile=True)
+    send(c, "server.py", _compile=True)
+    send(c, "tinyweb.py", _compile=True)
+
+    try:
+        mkdir(c, "web")
+    except:
+        pass
+    send(c, "web/index.html")
+    send(c, "web/control.html")
+    send(c, "web/connection.html")
+    send(c, "web/fire_icon.svg")
+    send(c, "web/style.css")
+    send(c, "web/d3.v4.min.js")
+
+    send(c, "main.py", _compile=False)

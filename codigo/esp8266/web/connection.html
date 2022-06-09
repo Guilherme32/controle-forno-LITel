@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css"/>
+    <title>Forno LITel - Conexão</title>
+    <link rel="icon" type="image/svg" href="fire_icon.svg">
+</head>
+<body>
+    <div class="content">
+        <h1>Conexão</h1>
+        <hr/>
+        
+        <table>
+            <tr><td colspan="2"><h3>Ponto de acesso do ESP: </h3></td></tr>
+            <tr>
+                <td><label for="ap_ssid">SSID: </label><span id="ap_ssid">procurando...</span></td>
+                <td><label for="ap_password">Senha: </label><span id="ap_password">procurando...</span></td>
+            </tr>
+            <tr>
+                <td><label for="ap_ip">IP: </label><span id="ap_ip">procurando...</span></td>
+            </tr>
+
+            <tr><td colspan="2"><h3>Rede WiFi externa: </h3></td></tr>
+            <form>
+                <tr>
+                    <td><label for="sta_ssid">SSID: </label><input if = "sta_ssid" type="text"></td>
+                    <td><label for="sta_password">Senha: </label><input id="sta_password" type="text"></td>
+                </tr>
+                <tr>
+                    <td><label for="sta_ip">IP: </label><span id="sta_ip">Procurando...</span></td>
+                    <td><input type="submit" class="button"></td>
+                </tr>
+            </form>
+        </table>
+
+
+
+        <a class="button" href="index.html">Página principal</a>
+        <a class="button" href="control.html">Painel de Controle</a>
+        <a class="button" href="https://github.com/Guilherme32/controle-forno-LITel">Github</a>
+    </div>
+</body>
+</html>
