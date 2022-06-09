@@ -1,8 +1,7 @@
 # TODO implementar o controlador
 
 from machine import Pin
-from micropython import native
-
+import micropython
 
 class Controller:
     def __init__(self, interrupt_pin, output_pins, read_function, period=120,
@@ -27,7 +26,7 @@ class Controller:
 
         self.max_target = max_target
 
-    @native
+    @micropython.native
     def send_power(self, _: Pin):
         """ Chamado no interrupt da deteccao de zero """
         if self.cycles == self.period:
@@ -43,13 +42,13 @@ class Controller:
 
         self.cycles += 1
 
-    @native
+    @micropython.native
     def update_ratio(self):
         if self.control:
             # Decide
             pass
 
-    @native
+    @micropython.native
     def set_pins(self, value):
         for pin in self.output_pins:
             pin.value(value)

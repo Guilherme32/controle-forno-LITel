@@ -7,7 +7,7 @@ import network
 class NetworkHandler:
     def __init__(self, ap_ssid="forno-litel",
                  ap_password="787Cu7kg",
-                 port=8081,
+                 port=80,
                  tries=10) -> None:
 
         self.ap_ssid = ap_ssid
@@ -76,19 +76,19 @@ class NetworkHandler:
     def ap_info(self):
         ifconfig = self.ap.ifconfig()
         return f"AP: SSID: {self.ap_ssid}    Senha: {self.ap_password}    " \
-               + f"IP: {ifconfig}"
+               + f"IP: {ifconfig[0]}"
 
     def sta_info(self):
         if self.sta.isconnected():
             ifconfig = self.sta.ifconfig()
-            return f"STA: SSID: {self.sta_ssid}    IP: {ifconfig}"
+            return f"STA: SSID: {self.sta_ssid}    IP: {ifconfig[0]}"
 
         return "STA desconectado"
 
     def all_info(self):
         return f"{self.ap_info()}\n" \
-               f"{self.sta_info()}\n" \
-               f"Escutando na porta {self.port}"
+               + f"{self.sta_info()}\n" \
+               + f"Escutando na porta {self.port}"
 
     def info_command(self, _):
         print(self.all_info())

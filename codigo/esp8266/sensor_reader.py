@@ -50,7 +50,7 @@ class SensorReader:
         try:
             sensor_index = int(sensor_index)
         except ValueError:
-            print("Comando invalido. Deve ser 'sensorX', onde x e o indice do"
+            print("Comando invalido. Deve ser 'sensorX', onde x e o indice do "
                   "sensor")
             return True
 
@@ -67,11 +67,11 @@ class SensorReader:
         if command == "temp":  # Ainda não completou o comando
             return False
 
-        sensor_index = command[6:]
+        sensor_index = command[4:]
         try:
             sensor_index = int(sensor_index)
         except ValueError:
-            print("Comando invalido. Deve ser 'tempX', onde x e o indice do"
+            print("Comando invalido. Deve ser 'tempX', onde x e o indice do "
                   "sensor")
             return True
 
