@@ -49,7 +49,7 @@ class SerialHandler:
         UART em 115200 b/s, com 8 bits de dados, nenhum de paridade e
         1 stop bit. """
         while True:
-            await sleep_ms(50)
+            await sleep_ms(100)
             while events := self.poll.poll(0):
                 for event in events:
                     char = event[0].read(1)

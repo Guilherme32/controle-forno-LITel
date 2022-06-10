@@ -73,10 +73,6 @@ def send_all(c):
     send(c, "server.py", _compile=True)
     send(c, "tinyweb.py", _compile=True)
 
-    try:
-        mkdir(c, "web")
-    except:
-        pass
     send(c, "web/index.html")
     send(c, "web/control.html")
     send(c, "web/connection.html")

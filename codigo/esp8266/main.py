@@ -1,5 +1,3 @@
-from machine import Pin
-import machine
 import uasyncio
 
 import gc
@@ -10,11 +8,14 @@ from network_handler import NetworkHandler
 from sensor_reader import SensorReader
 from controller import Controller
 
+import server
+
 gc.collect()
 
 
 async def main():
     print("\n\nPrograma do controle do forno do LITel")
+    print("Carregando...")
     commands = []
 
     exit_handler = ExitHandler()
@@ -37,12 +38,25 @@ async def main():
 
     gc.collect()
 
+    # web_app = server.setup(network_handler, sensor_reader, controller)
+    # uasyncio.create_task(server.app._tcp_server("0.0.0.0", 80, server.app.backlog))
+
+    app = server.setup(0, 0, 0)
+    app.run("0.0.0.0", 80, loop_forever=False)
+
+    # server_handler = ServerHandler()
+    # uasyncio.create_task(server_handler.task)
+    gc.collect()
+
+    print("Carregado.")
     while True:
         if exit_handler.pressed_button:
             controller.shutdown()
+            app.shutdown()
             exit_handler.exit_program()
 
-        await uasyncio.sleep_ms(100)
+        await uasyncio.sleep_ms(1000)
+        gc.collect()
 
 
 if __name__ == "__main__":
