@@ -2,6 +2,8 @@
 
 from machine import Pin
 import micropython
+import time
+
 
 class Controller:
     def __init__(self, interrupt_pin, output_pins, read_function, period=120,
@@ -11,7 +13,7 @@ class Controller:
             pin.value(0)
 
         # Interrupcao da deteccao de zero
-        self.pir = Pin(interrupt_pin, Pin.IN)
+        self.pir = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
         self.pir.irq(self.send_power, Pin.IRQ_RISING)
 
         self.read_sensor = read_function
@@ -26,9 +28,17 @@ class Controller:
 
         self.max_target = max_target
 
+        self.last_tick = time.ticks_ms()
+
     @micropython.native
     def send_power(self, _: Pin):
         """ Chamado no interrupt da deteccao de zero """
+        new_tick = time.ticks_ms()
+        diff = time.ticks_diff(new_tick, self.last_tick)
+        if diff < 4:   # debounce
+            return
+        self.last_tick = new_tick
+
         if self.cycles == self.period:
             self.cycles = 0
             self.update_ratio()
@@ -102,7 +112,7 @@ class Controller:
                   "ligado, em ciclos.")
             return True
 
-        if 0 <= on_time < self.period:
+        if 0 <= on_time <= self.period:
             self.set_ratio((on_time, self.period - on_time))
             print("Relacao atualizada")
         else:
