@@ -77,3 +77,8 @@ input.button{
     float: right;
     padding: auto;
 }
+
+.error{
+    color: red;
+    font-weight: bold;
+}

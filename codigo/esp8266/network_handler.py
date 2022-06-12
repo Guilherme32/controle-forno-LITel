@@ -71,7 +71,7 @@ class NetworkHandler:
         while True:
             if (not self.sta.isconnected()) and self.sta_ssid:
                 await self.connect()
-            await uasyncio.sleep(10)
+            await uasyncio.sleep(1)
 
     def ap_info(self):
         ifconfig = self.ap.ifconfig()
@@ -92,4 +92,25 @@ class NetworkHandler:
 
     def info_command(self, _):
         print(self.all_info())
+        return True
+
+    def update_config(self, ssid, password):
+        """ Atualiza a configuracao de rede, e desativa o modo sta. Assim o
+         loop principal vai tentar reconectar
+         """
+
+        if ssid and password:
+            config = {}
+            if "config.json" in os.listdir():
+                with open("config.json", "r") as file:
+                    config = json.load(file)
+
+            config["sta_ssid"] = ssid
+            config["sta_password"] = password
+            with open("config.json", "w") as file:
+                json.dump(config, file)
+
+        self.sta.active(False)
+        self.load_config()
+
         return True

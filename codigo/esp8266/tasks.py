@@ -79,5 +79,6 @@ def send_all(c):
     send(c, "web/fire_icon.svg")
     send(c, "web/style.css")
     send(c, "web/d3.v4.min.js")
+    send(c, "web/connection.js")
 
     send(c, "main.py", _compile=False)
