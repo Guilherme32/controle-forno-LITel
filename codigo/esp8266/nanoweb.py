@@ -1,3 +1,4 @@
+# Nao foi escrito por mim, retirado daqui https://github.com/hugokernel/micropython-nanoweb/tree/master
 
 import uasyncio as asyncio
 import uerrno
