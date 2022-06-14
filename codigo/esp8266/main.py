@@ -35,7 +35,7 @@ async def main():
     commands.append(("sensor", sensor_reader.reading_command))
     uasyncio.create_task(sensor_reader.run())
 
-    controller = Controller(5, (4, 2), lambda: sensor_reader.readings[4])
+    controller = Controller(5, (4, 2), 16, lambda: sensor_reader.readings[4])
     commands.append(("sett", controller.set_target_command))
     commands.append(("setp", controller.set_ratio_command))
 
@@ -43,9 +43,6 @@ async def main():
     uasyncio.create_task(serial_handler.run())
 
     gc.collect()
-
-    # web_app = server.setup(network_handler, sensor_reader, controller)
-    # uasyncio.create_task(server.app._tcp_server("0.0.0.0", 80, server.app.backlog))
 
     app = server.setup(network_handler, sensor_reader, controller)
     uasyncio.create_task(app.run())

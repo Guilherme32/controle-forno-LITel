@@ -8,7 +8,7 @@ from fuzzy_controller import FuzzyController
 
 
 class Controller:
-    def __init__(self, interrupt_pin, output_pins, read_function, period=120,
+    def __init__(self, interrupt_pin, output_pins, stability_pin, read_function, period=120,
                  max_target=140):
         self.output_pins = tuple(Pin(pin, Pin.OUT) for pin in output_pins)
         for pin in self.output_pins:
@@ -33,6 +33,10 @@ class Controller:
         self.last_tick = time.ticks_ms()
 
         self.fuzzy_controller = FuzzyController(read_function(), self.period)
+        self.last_read = read_function()
+        self.stability_count = 0
+        self.stability_pin = Pin(stability_pin, Pin.OUT)
+        self.stability_pin.value(0)
 
     @micropython.native
     def send_power(self, _: Pin):
@@ -46,6 +50,7 @@ class Controller:
         if self.cycles == self.period:
             self.cycles = 0
             self.update_ratio()
+            self.check_stability()
 
         if self.power_counter > 0:
             self.power_counter -= self.power_ratio[1]
@@ -60,6 +65,18 @@ class Controller:
         if self.control:
             power = self.fuzzy_controller.run_step(self.read_sensor())
             self.power_ratio = (power, self.period - power)
+
+    def check_stability(self):
+        if -1 <= self.read_sensor() - self.last_read <= 1:
+            self.stability_count += 1
+        else:
+            self.last_read = self.read_sensor()
+            self.stability_count = 0
+
+        if self.stability_count >= 10:
+            self.stability_pin.value(1)
+        else:
+            self.stability_pin.value(0)
 
     def set_pins(self, value):
         for pin in self.output_pins:
