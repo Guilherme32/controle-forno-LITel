@@ -19,7 +19,6 @@ class SensorReader:
         voltage = self.readings[index] * 2 / 1024  # *2 pq usa divisor
         return voltage / 0.01       # Sensibilidade no datasheet
 
-    @micropython.native
     def set_control_pins(self, value):
         """ 
         Seta os pinos de controle do multiplex de forma a acessar o dispositivo 
@@ -28,7 +27,6 @@ class SensorReader:
         for c, pin in enumerate(self.control_pins):
             pin.value((value >> c) % 2)
 
-    @micropython.native
     def read_temperatures(self):
         """Le a temperatura em todos os sensores e salva no objeto"""
 

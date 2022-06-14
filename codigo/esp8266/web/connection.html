@@ -25,14 +25,14 @@
             </tr>
 
             <tr><td colspan="2"><h3>Rede WiFi externa: </h3></td></tr>
-            <form>
+            <form id="sta_config_form">
                 <tr>
                     <td><label for="sta_ssid">SSID: </label><input id = "sta_ssid" type="text" value="procurando..."></td>
                     <td><label for="sta_password">Senha: </label><input id="sta_password" type="text" value="procurando..."></td>
                 </tr>
                 <tr>
                     <td><label for="sta_ip">IP: </label><span id="sta_ip">Procurando...</span></td>
-                    <td><input type="submit" class="button" value="Enviar" onsubmit="submit_sta_config"></td>
+                    <td><button class="button" type="submit" id="sta_submit">Enviar</button>
                 </tr>
             </form>
         </table>

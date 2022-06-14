@@ -110,7 +110,9 @@ class NetworkHandler:
             with open("config.json", "w") as file:
                 json.dump(config, file)
 
-        self.sta.active(False)
-        self.load_config()
+            self.sta.active(False)
+            self.load_config()
 
-        return True
+            return True
+
+        return False

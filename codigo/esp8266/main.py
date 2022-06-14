@@ -2,11 +2,17 @@ import uasyncio
 
 import gc
 
-from interrupt_exit import ExitHandler
-from serial_comm import SerialHandler
-from network_handler import NetworkHandler
-from sensor_reader import SensorReader
+gc.collect()
 from controller import Controller
+gc.collect()
+from interrupt_exit import ExitHandler
+gc.collect()
+from serial_comm import SerialHandler
+gc.collect()
+from network_handler import NetworkHandler
+gc.collect()
+from sensor_reader import SensorReader
+gc.collect()
 
 import server
 
@@ -41,18 +47,16 @@ async def main():
     # web_app = server.setup(network_handler, sensor_reader, controller)
     # uasyncio.create_task(server.app._tcp_server("0.0.0.0", 80, server.app.backlog))
 
-    app = server.setup(0, 0, 0)
-    app.run("0.0.0.0", 80, loop_forever=False)
+    app = server.setup(network_handler, sensor_reader, controller)
+    uasyncio.create_task(app.run())
 
-    # server_handler = ServerHandler()
-    # uasyncio.create_task(server_handler.task)
     gc.collect()
+    print(f"{gc.mem_free()} free bytes after webserver")
 
     print("Carregado.")
     while True:
         if exit_handler.pressed_button:
             controller.shutdown()
-            app.shutdown()
             exit_handler.exit_program()
 
         await uasyncio.sleep_ms(1000)

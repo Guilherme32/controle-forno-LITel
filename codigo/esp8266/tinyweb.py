@@ -485,7 +485,7 @@ class webserver:
                 log.exc(e)
         except Exception as e:
             # Unhandled expection in user's method
-            log.error(req.path.decode())
+            log.fuzzy_error(req.path.decode())
             log.exc(e, "")
             try:
                 await resp.error(500)

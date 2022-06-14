@@ -4,6 +4,8 @@ from machine import Pin
 import micropython
 import time
 
+from fuzzy_controller import FuzzyController
+
 
 class Controller:
     def __init__(self, interrupt_pin, output_pins, read_function, period=120,
@@ -30,6 +32,8 @@ class Controller:
 
         self.last_tick = time.ticks_ms()
 
+        self.fuzzy_controller = FuzzyController(read_function(), self.period)
+
     @micropython.native
     def send_power(self, _: Pin):
         """ Chamado no interrupt da deteccao de zero """
@@ -52,13 +56,11 @@ class Controller:
 
         self.cycles += 1
 
-    @micropython.native
     def update_ratio(self):
         if self.control:
-            # Decide
-            pass
+            power = self.fuzzy_controller.run_step(self.read_sensor())
+            self.power_ratio = (power, self.period - power)
 
-    @micropython.native
     def set_pins(self, value):
         for pin in self.output_pins:
             pin.value(value)
