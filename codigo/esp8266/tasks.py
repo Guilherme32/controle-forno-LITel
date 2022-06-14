@@ -66,12 +66,11 @@ def send_all(c):
 
     send(c, "controller.py", _compile=True)
     send(c, "interrupt_exit.py", _compile=True)
-    send(c, "logging.py", _compile=True)
     send(c, "network_handler.py", _compile=True)
     send(c, "sensor_reader.py", _compile=True)
     send(c, "serial_comm.py", _compile=True)
     send(c, "server.py", _compile=True)
-    send(c, "tinyweb.py", _compile=True)
+    send(c, "nanoweb.py", _compile=True)
 
     send(c, "web/index.html")
     send(c, "web/control.html")
