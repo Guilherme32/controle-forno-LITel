@@ -93,6 +93,7 @@ class Controller:
         ativa o modo de controle
         """
         self.set_point = int(target * 5e-3 * 1024)
+        self.fuzzy_controller.set_target(self.set_point)
         self.control = True
         self.update_ratio()
         self.check_counter_limits()

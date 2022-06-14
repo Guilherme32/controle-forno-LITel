@@ -16,7 +16,7 @@ def fuzzify_triangular(value: int, center: int,
         return 256
     if value > center + half_width:
         return 0
-    if value < center < half_width:
+    if value < center - half_width:
         return 0
 
     centered_value = int(abs(value - center))
@@ -47,6 +47,9 @@ class FuzzyController:
 
         self.power = 0
         self.max_power = max_power
+
+    def set_target(self, value):
+        self.set_point = value
 
     def fuzzify_delta_temp(self, temp: int) -> None:
         delta_temp = int(temp - self.last_temp)
@@ -97,9 +100,9 @@ class FuzzyController:
             membership_sum += self.fuzzy_power_add[i]
 
         power_add //= membership_sum
-        power_add //= 256
 
         self.power += power_add
+
         if self.power > self.max_power:
             self.power = self.max_power
         if self.power < 0:
