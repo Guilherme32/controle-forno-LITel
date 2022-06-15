@@ -77,7 +77,10 @@ def send_all(c):
     send(c, "web/connection.html")
     send(c, "web/fire_icon.svg")
     send(c, "web/style.css")
-    send(c, "web/d3.v4.min.js")
+    send(c, "web/d3.v4.min.js.gz")
+    send(c, "web/c3.min.js.gz")
+    send(c, "web/c3.min.css.gz")
     send(c, "web/connection.js")
+    send(c, "web/control.js")
 
     send(c, "main.py", _compile=False)

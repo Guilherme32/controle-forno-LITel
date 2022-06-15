@@ -50,7 +50,7 @@ hr{
     background-color: white;
     border: 2px solid gray;
 
-    padding: 5px;
+    padding: 10px;
     margin: 10px;
 }
 
@@ -68,7 +68,7 @@ hr{
     font-size: 2rem;
 }
 
-label{
+.bold{
     font-weight: bold;
 }
 
@@ -82,3 +82,58 @@ input.button{
     color: red;
     font-weight: bold;
 }
+
+#graph_container{
+    width: 100%;
+    height: calc(100vh - 20px) !important;
+    background-color: white;
+    border: 2px solid gray;
+}
+#graph{
+    height: 100%;
+    width: 100%;
+}
+
+.right{
+    float: right;
+}
+
+.container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.table{
+    width: 100%;
+}
+
+#power_bar_edge{
+    border: 2px solid black;
+    height: 2rem;
+    width: 8rem;
+
+    margin: auto;
+}
+
+#power_bar{
+    background-color: black;
+    height: 100%;
+    width: 50%;
+}
+
+.center{
+    text-align: center;
+}
+
+.disabled{
+    display: none;
+}
+
+#operation_info{
+    width: 15rem;
+}
+
+input[type=number]{
+    width: 6rem;
+}
+

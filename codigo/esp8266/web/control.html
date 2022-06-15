@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css"/>
+    <title>Forno LITel - Controle</title>
+    <link rel="icon" type="image/svg" href="fire_icon.svg">
+</head>
+<body>
+    <h1>Controle</h1>
+    <hr/>    
+    <div class="container">
+        <form id="operation_info" class="">
+            <p class="bold">Modo de operação: </p>
+            <input type="radio" id="mode_set_point" value="set_point" name="control_type"><label for="mode_set_point">Set Point</label>
+            <input type="radio" id="mode_power" value="power" name="control_type"><label for="mode_power">Potência</label>
+
+            <div id="set_point_div">
+                <p/>
+                <label class="bold">Set Point: </label>
+                <input type="number" min="0" max="150" step="0.01" value="0"/>
+                <span>ºC</span>
+            </div>
+
+            <div id="power_div" class="disabled">
+                <p/>
+                <label class="bold">Potência: </label>
+                <input type="number" min="0" max="100" value="0"/>
+                <span>%</span>
+            </div>
+
+            <button type="submit" class="button right">Enviar</button>
+        </form>
+        
+        <div>
+            <p class="bold center">Potência: <span id="power">50%</span></p>
+            <div id="power_bar_edge">
+                <div id="power_bar"></div>
+            </div>
+            <p class="bold center" id="steady_state">Transitório</p>
+            <p class="center"><span class="bold">Temp S5: </span><span id="temp_s5">150.00</span>ºC</p>
+        </div>
+
+        <div>
+            <a class="button" href="index.html">Página inicial</a>
+            <a class="button" href="connection.html">Conexão</a>
+            <a class="button" href="https://github.com/Guilherme32/controle-forno-LITel">Github</a>
+        </div>
+    </div>
+    <div id="graph_container">
+        <div id="graph"><h3 class="center">Carregando Scripts</h1></div>
+    </div>
+</body>
+
+<script src="d3.v4.min.js" type="application/javascript"></script>
+<script src="c3.min.js" type="application/javascript"></script>
+<link rel="stylesheet" href="c3.min.css"/>
+<script src="control.js" type="application/javascript"></script>
+</html>

@@ -1,19 +1,14 @@
 from network_handler import NetworkHandler
 from sensor_reader import SensorReader
 from controller import Controller
-import json
 
 
 def setup(network_handler: NetworkHandler,
           sensor_reader: SensorReader,
           controller: Controller):
     import json
-    import os
-    import time
-    import sys
-    import uasyncio as asyncio
     from nanoweb import HttpError, Nanoweb, send_file
-    from ubinascii import a2b_base64 as base64_decode
+    from sensor_reader import reading_to_temp
 
     # region static
     async def index(request):
@@ -60,11 +55,31 @@ def setup(network_handler: NetworkHandler,
         )
 
     async def d3(request):
+        await request.write(b"HTTP/1.1 200 Ok\r\n")
+        await request.write("Content-Encoding: gzip\r\n")
+        await request.write("Content-Type: application/javascript\r\n")
+        await request.write("Content-Length: 74041\r\n\r\n")
+
+        await send_file(
+            request,
+            'd3.v4.min.js.gz',
+        )
+
+    async def c3_js(request):
+        await request.write(b"HTTP/1.1 200 Ok\r\n")
+        await request.write("Content-Encoding: gzip\r\n\r\n")
+
+        await send_file(
+            request,
+            'c3.min.js.gz',
+        )
+
+    async def c3_css(request):
         await request.write(b"HTTP/1.1 200 Ok\r\n\r\n")
 
         await send_file(
             request,
-            'd3.v4.min.js',
+            'c3.min.css',
         )
 
     async def connection_js(request):
@@ -82,7 +97,7 @@ def setup(network_handler: NetworkHandler,
         await request.write(b"HTTP/1.1 200 Ok\r\n\r\n")
 
         await request.write(json.dumps({
-            "ssid": network_handler.sta_ssid,
+            "ssid": network_handler.ap_ssid,
             "password": network_handler.ap_password,
             "ip": network_handler.ap.ifconfig()[0]
         }))
@@ -115,6 +130,56 @@ def setup(network_handler: NetworkHandler,
     # endregion
 
     # region sensor and controller api
+    async def controller_info(request):
+        await request.write(b"HTTP/1.1 200 Ok\r\n\r\n")
+
+        await request.write(json.dumps({
+            "temperatures":
+                [sensor_reader.get_temperature(i) for i in range(6)],  # 6 sensores
+            "steady_state": bool(controller.steady_pin.value()),
+            "power_ratio": controller.power_ratio,
+            "control": controller.control,
+            "set_point": reading_to_temp(controller.set_point)
+        }))
+
+    async def send_power(request):
+        if request.method != "POST":
+            raise HttpError(request, 501, "Not Implemented")
+
+        size = int(request.headers.get("Content-Length", 0))
+        if size == 0:
+            await request.write(b"HTTP/1.1 204 No Content\r\n\r\n")
+            return
+
+        msg = await request.read(size)
+        data = json.loads(msg)
+        power = data.get("power", 0)
+
+        if power > controller.period or power < 0:
+            await request.write(b"HTTP/1.1 400 Invalid Power")
+        else:
+            controller.set_ratio((power, controller.period - power))
+            await request.write(b"HTTP/1.1 200 Ok")
+
+    async def send_set_point(request):
+        if request.method != "POST":
+            raise HttpError(request, 501, "Not Implemented")
+
+        size = int(request.headers.get("Content-Length", 0))
+        if size == 0:
+            await request.write(b"HTTP/1.1 204 No Content\r\n\r\n")
+            return
+
+        msg = await request.read(size)
+        data = json.loads(msg)
+        target = data.get("set_point", 0)
+
+        if target > controller.max_target or target < 0:
+            await request.write(b"HTTP/1.1 400 Invalid Set Point")
+        else:
+            controller.set_target(target)
+            await request.write(b"HTTP/1.1 200 Ok")
+
     # endregion
 
     app = Nanoweb()
@@ -127,8 +192,15 @@ def setup(network_handler: NetworkHandler,
         "/style.css": style,
         "/fire_icon.svg": fire_icon,
         "/d3.v4.min.js": d3,
+        "/c3.min.js": c3_js,
+        "/c3.min.css": c3_css,
+
         "/api/sta_info": sta_info,
-        "/api/ap_info": ap_info
+        "/api/ap_info": ap_info,
+
+        "/api/controller_info": controller_info,
+        "/api/send_power": send_power,
+        "/api/send_set_point": send_set_point
     }
 
     return app

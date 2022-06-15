@@ -1,12 +1,16 @@
 from machine import Pin, ADC
 from uasyncio import sleep_ms
-import micropython
+
+
+def reading_to_temp(reading):
+    voltage = reading * 2 / 1024  # *2 pq usa divisor
+    return voltage / 0.01
 
 
 class SensorReader:
     def __init__(self, adc,
                  control_pins,      # type: Tuple[int]
-                 read_period: int = 500) -> None:
+                 read_period: int = 400) -> None:
 
         self.control_pins = tuple(Pin(pin, Pin.OUT) for pin in control_pins)
         self.read_period = read_period
@@ -15,9 +19,7 @@ class SensorReader:
 
     def get_temperature(self, index) -> float:
         """Pega a temperatura lida pelo sensor de indice 'index'"""
-
-        voltage = self.readings[index] * 2 / 1024  # *2 pq usa divisor
-        return voltage / 0.01       # Sensibilidade no datasheet
+        return reading_to_temp(self.readings[index])
 
     def set_control_pins(self, value):
         """ 

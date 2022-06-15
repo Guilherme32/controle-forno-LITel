@@ -34,9 +34,9 @@ class Controller:
 
         self.fuzzy_controller = FuzzyController(read_function(), self.period)
         self.last_read = read_function()
-        self.stability_count = 0
-        self.stability_pin = Pin(stability_pin, Pin.OUT)
-        self.stability_pin.value(0)
+        self.steady_count = 0
+        self.steady_pin = Pin(stability_pin, Pin.OUT)
+        self.steady_pin.value(0)
 
     @micropython.native
     def send_power(self, _: Pin):
@@ -50,7 +50,7 @@ class Controller:
         if self.cycles == self.period:
             self.cycles = 0
             self.update_ratio()
-            self.check_stability()
+            self.check_steady_state()
 
         if self.power_counter > 0:
             self.power_counter -= self.power_ratio[1]
@@ -66,17 +66,17 @@ class Controller:
             power = self.fuzzy_controller.run_step(self.read_sensor())
             self.power_ratio = (power, self.period - power)
 
-    def check_stability(self):
+    def check_steady_state(self):
         if -1 <= self.read_sensor() - self.last_read <= 1:
-            self.stability_count += 1
+            self.steady_count += 1
         else:
             self.last_read = self.read_sensor()
-            self.stability_count = 0
+            self.steady_count = 0
 
-        if self.stability_count >= 10:
-            self.stability_pin.value(1)
+        if self.steady_count >= 10:
+            self.steady_pin.value(1)
         else:
-            self.stability_pin.value(0)
+            self.steady_pin.value(0)
 
     def set_pins(self, value):
         for pin in self.output_pins:
