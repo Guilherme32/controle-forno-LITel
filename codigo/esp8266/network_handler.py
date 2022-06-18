@@ -2,10 +2,12 @@ import json
 import os
 import uasyncio
 import network
+from machine import Pin
 
 
 class NetworkHandler:
-    def __init__(self, ap_ssid="forno-litel",
+    def __init__(self, status_pin,
+                 ap_ssid="forno-litel",
                  ap_password="787Cu7kg",
                  port=80,
                  tries=10) -> None:
@@ -31,6 +33,9 @@ class NetworkHandler:
 
         self.load_config()
 
+        self.status_pin = Pin(status_pin, Pin.OUT)
+        self.status_pin.value(0)
+
     def load_config(self) -> None:
         """Carrega o config.json, que guarda o ssid e senha pra conectar"""
 
@@ -49,11 +54,15 @@ class NetworkHandler:
         self.sta.active(True)
         self.sta.connect(self.sta_ssid, self.sta_password)
         while self.sta.status() == network.STAT_CONNECTING:
+            self.status_pin.value(not self.status_pin.value())
             await uasyncio.sleep_ms(100)
 
         if self.sta.isconnected():
             self.tries = 0
+            self.status_pin.value(1)
             return True
+
+        self.status_pin.value(0)
 
         self.tries += 1
         if self.tries >= self.max_tries:
@@ -70,6 +79,7 @@ class NetworkHandler:
         """
         while True:
             if (not self.sta.isconnected()) and self.sta_ssid:
+                self.status_pin.value(0)
                 await self.connect()
             await uasyncio.sleep(1)
 

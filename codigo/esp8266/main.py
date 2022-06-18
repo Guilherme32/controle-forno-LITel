@@ -24,18 +24,18 @@ async def main():
     print("Carregando...")
     commands = []
 
-    exit_handler = ExitHandler()
+    exit_handler = ExitHandler(0)
 
-    network_handler = NetworkHandler()
+    network_handler = NetworkHandler(2)
     commands.append(("netinfo", network_handler.info_command))
     uasyncio.create_task(network_handler.run())
 
-    sensor_reader = SensorReader(0, (14, 13, 12))
+    sensor_reader = SensorReader(0, (16, 14, 12))
     commands.append(("temp", sensor_reader.temperature_command))
     commands.append(("sensor", sensor_reader.reading_command))
     uasyncio.create_task(sensor_reader.run())
 
-    controller = Controller(5, (4, 2), 16, lambda: sensor_reader.readings[4])
+    controller = Controller(15, (4, 5), 13, lambda: sensor_reader.readings[4])
     commands.append(("sett", controller.set_target_command))
     commands.append(("setp", controller.set_ratio_command))
 
