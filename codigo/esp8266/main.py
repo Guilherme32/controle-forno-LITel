@@ -30,7 +30,7 @@ async def main():
     commands.append(("netinfo", network_handler.info_command))
     uasyncio.create_task(network_handler.run())
 
-    sensor_reader = SensorReader(0, (16, 14, 12))
+    sensor_reader = SensorReader(0, (12, 14, 16))
     commands.append(("temp", sensor_reader.temperature_command))
     commands.append(("sensor", sensor_reader.reading_command))
     uasyncio.create_task(sensor_reader.run())
