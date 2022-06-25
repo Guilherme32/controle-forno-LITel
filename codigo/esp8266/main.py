@@ -35,7 +35,7 @@ async def main():
     commands.append(("sensor", sensor_reader.reading_command))
     uasyncio.create_task(sensor_reader.run())
 
-    controller = Controller(15, (4, 5), 13, lambda: sensor_reader.readings[4])
+    controller = Controller(13, (4, 5), 15, lambda: sensor_reader.readings[4])
     commands.append(("sett", controller.set_target_command))
     commands.append(("setp", controller.set_ratio_command))
 
