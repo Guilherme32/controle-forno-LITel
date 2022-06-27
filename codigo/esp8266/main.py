@@ -48,7 +48,7 @@ async def main():
     uasyncio.create_task(app.run())
 
     gc.collect()
-    print(f"{gc.mem_free()} apos inicio do webserver")
+    print(f"{gc.mem_free()} bytes livres apos inicio do webserver")
 
     print("Carregado.")
     while True:
