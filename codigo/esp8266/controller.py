@@ -1,5 +1,3 @@
-# TODO implementar o controlador
-
 from machine import Pin
 import micropython
 import time
@@ -8,8 +6,26 @@ from fuzzy_controller import FuzzyController
 
 
 class Controller:
-    def __init__(self, interrupt_pin, output_pins, stability_pin, read_function, period=120,
+    def __init__(self, interrupt_pin: int,
+                 output_pins,      # type: Tuple[int]
+                 stability_pin: int,
+                 read_function,     # type: Callable
+                 period=120,
                  max_target=140):
+        """
+        Cuida das questoes do controlador:
+            - Enviar a potencia de saida determinada
+            - Chamar o algoritmo de decisao periodicamente
+
+        O algoritmo de controle propriamente dito (de decisao) usado e um com
+        fuzzy logic, em fuzzy_controller.py
+
+        Para modular a potencia, uma estrategia de zero-cross e empregada.
+        O controlador ativa a conducao do scr em uma quantidade X de
+        semiciclos, enquanto bloqueia em Y semiciclos. O padrao e alinhar
+        esses semiciclos de forma sequencial, mas aqui e usada uma forma que
+        permite uma distribuicao mais homogenea dentro do periodo
+        """
         self.output_pins = tuple(Pin(pin, Pin.OUT) for pin in output_pins)
         for pin in self.output_pins:
             pin.value(0)
@@ -62,11 +78,16 @@ class Controller:
         self.cycles += 1
 
     def update_ratio(self):
+        """Atualiza a relacao de potencia a ser enviada a carga"""
         if self.control:
             power = self.fuzzy_controller.run_step(self.read_sensor())
             self.power_ratio = (power, self.period - power)
 
     def check_steady_state(self):
+        """
+        Confere se alcancou o regime permanente. Se chegou, indica no led
+        correspondente
+        """
         if -1 <= self.read_sensor() - self.last_read <= 1:
             self.steady_count += 1
         else:
@@ -78,18 +99,21 @@ class Controller:
         else:
             self.steady_pin.value(0)
 
-    def set_pins(self, value):
+    def set_pins(self, value: int):
+        """Manda o valor para todas as saidas do controlador"""
         for pin in self.output_pins:
             pin.value(value)
 
     def set_ratio(self, ratio: tuple):
-        """ Coloca a potencia de saida, e desativa o modo de controle """
+        """Seta a potencia de saida, e desativa o modo de controle"""
         self.power_ratio = ratio
         self.check_counter_limits()
         self.control = False
 
     def set_target(self, target: float):
-        """ Coloca o set point, como a leitura esperada no adc do sensor, e
+        """
+        Transforma o parametro recebido de ºC em um inteiro representando a
+        leitura correspondente a mesma temperatura. Entao seta o set point, e
         ativa o modo de controle
         """
         self.set_point = int(target * 5e-3 * 1024)
@@ -99,9 +123,10 @@ class Controller:
         self.check_counter_limits()
 
     def check_counter_limits(self):
-        """ Confere se o power counter esta nos limites da relacao de
+        """
+        Confere se o power counter esta nos limites da relacao de
         potencia. Deve ser chamado quando a relacao for alterada quando o
-        contador e diferente de 0 para ter uma mudanca mais suave.
+        contador e diferente de 0 para ter uma mudanca mais suave
         """
         if self.power_counter > self.power_ratio[0]:
             self.power_counter = self.power_ratio[0]
@@ -110,14 +135,15 @@ class Controller:
             self.power_counter = - self.power_ratio[1]
 
     def shutdown(self):
-        """ Desliga o controlador e a carga """
+        """Desliga o controlador e a carga"""
         self.control = False
         self.power_counter = 0
         self.power_ratio = (0, self.period)
         self.set_pins(0)
 
-    def set_ratio_command(self, command):
-        """ Callback para o comando setp. Seta a relacao de potencia na saida.
+    def set_ratio_command(self, command: str) -> bool:
+        """
+        Callback para o comando setp. Seta a relacao de potencia na saida.
         E esperado 3 digitos apos o setp, de 000 a periodo (120 por padrao),
         indicando o tempo ligado.
         """
@@ -140,8 +166,9 @@ class Controller:
                   " maximo (120 por padrao)")
         return True
 
-    def set_target_command(self, command):
-        """ Callback para o comando sett. Seta a temperatura alvo do sistema.
+    def set_target_command(self, command: str) -> bool:
+        """
+        Callback para o comando sett. Seta a temperatura alvo do sistema.
         E esperado 5 caracteres apos o sett, no formato XXX.X, onde esse valor
         e a temperatura em ºC, com precisao de 1 casa decimal
         """

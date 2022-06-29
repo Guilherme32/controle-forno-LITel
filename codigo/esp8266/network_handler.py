@@ -11,7 +11,11 @@ class NetworkHandler:
                  ap_password="787Cu7kg",
                  port=80,
                  tries=10) -> None:
-
+        """
+        Cuida das questoes de rede, da conexao wifi tanto em modo acess point
+        (o dispositivo se conecta a rede do esp) quanto em modo station (o
+        esp e o dispositivo se conectam  em um intermediario - o roteador)
+        """
         self.ap_ssid = ap_ssid
         self.ap_password = ap_password
 
@@ -83,31 +87,37 @@ class NetworkHandler:
                 await self.connect()
             await uasyncio.sleep(1)
 
-    def ap_info(self):
+    def ap_info(self) -> str:
+        """Retorna uma string com as informacoes do modo ap formatadas"""
         ifconfig = self.ap.ifconfig()
         return f"AP: SSID: {self.ap_ssid}    Senha: {self.ap_password}    " \
                + f"IP: {ifconfig[0]}"
 
-    def sta_info(self):
+    def sta_info(self) -> str:
+        """Retorna uma string com as informacoes do modo sta formatadas"""
         if self.sta.isconnected():
             ifconfig = self.sta.ifconfig()
             return f"STA: SSID: {self.sta_ssid}    IP: {ifconfig[0]}"
 
         return "STA desconectado"
 
-    def all_info(self):
+    def all_info(self) -> str:
+        """Retorna uma string com todas as informacoes de conexao"""
         return f"{self.ap_info()}\n" \
                + f"{self.sta_info()}\n" \
                + f"Escutando na porta {self.port}"
 
     def info_command(self, _):
+        """Envia as informacoes de conexao pelo serial"""
         print(self.all_info())
         return True
 
-    def update_config(self, ssid, password):
-        """ Atualiza a configuracao de rede, e desativa o modo sta. Assim o
-         loop principal vai tentar reconectar
-         """
+    def update_config(self, ssid: str, password: str) -> bool:
+        """
+        Atualiza a configuracao de rede, e desativa o modo sta. Assim o
+        loop principal vai tentar reconectar. Retorna True se ssid e password
+        foram validos, false se nao
+        """
 
         if ssid and password:
             config = {}

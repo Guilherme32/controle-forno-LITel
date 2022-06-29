@@ -2,13 +2,16 @@ from machine import Pin, ADC
 from uasyncio import sleep_ms
 
 
-def reading_to_temp(reading):
+def reading_to_temp(reading: int) -> float:
+    """
+    Transforma a leitura analogica (0~1023) em um valor de temperatura em ºC
+    """
     voltage = reading * 2 / 1024  # *2 pq usa divisor
     return voltage / 0.01
 
 
 class SensorReader:
-    def __init__(self, adc,
+    def __init__(self, adc: int,
                  control_pins,      # type: Tuple[int]
                  read_period: int = 400) -> None:
 
@@ -17,11 +20,11 @@ class SensorReader:
         self.readings = [0 for _ in range(2 ** len(control_pins))]
         self.adc = ADC(adc)
 
-    def get_temperature(self, index) -> float:
+    def get_temperature(self, index: int) -> float:
         """Pega a temperatura lida pelo sensor de indice 'index'"""
         return reading_to_temp(self.readings[index])
 
-    def set_control_pins(self, value):
+    def set_control_pins(self, value: int):
         """ 
         Seta os pinos de controle do multiplex de forma a acessar o dispositivo 
         numero 'value'
@@ -31,7 +34,6 @@ class SensorReader:
 
     def read_temperatures(self):
         """Le a temperatura em todos os sensores e salva no objeto"""
-
         for i in range(len(self.readings)):
             self.set_control_pins(i)
             self.readings[i] = self.adc.read()
@@ -42,8 +44,9 @@ class SensorReader:
             self.read_temperatures()
             await sleep_ms(self.read_period)
 
-    def reading_command(self, command) -> bool:
-        """ Callback para o comando sensor. Envia de volta a leitura no
+    def reading_command(self, command: str) -> bool:
+        """
+        Callback para o comando sensor. Envia de volta a leitura no
         sensor, entre 0 e 1023
         """
         if command == "sensor":     # Ainda não completou o comando
@@ -63,10 +66,11 @@ class SensorReader:
             print("Indice invalido. O sistema aceita indices de 0 a 7.")
         return True
 
-    def temperature_command(self, command) -> bool:
-        """ Callback para o comando temp. Envia de volta a temperatura lida do
-         sensor.
-         """
+    def temperature_command(self, command: str) -> bool:
+        """
+        Callback para o comando temp. Envia de volta a temperatura lida do
+        sensor.
+        """
         if command == "temp":  # Ainda não completou o comando
             return False
 
