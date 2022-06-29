@@ -4,9 +4,9 @@ Esse repositório guarda o que foi desenvolvido para o controle do forno do Labo
 
 # Informações
 
-O sistema funciona com aplicando um controle por lógica Fuzzy (FLC), com modulação de potência por detecção de zero, para manter a temperatura vista pelo sensor central do forno no valor especificado. Também pode funcionar por potência fixa.
+O sistema funciona aplicando um controle por lógica Fuzzy (FLC), com modulação de potência por detecção de zero, para manter a temperatura vista pelo sensor central do forno no valor especificado. Também pode funcionar por potência fixa.
 
-O programa roda em um esp8266, programado com o framework micropython.
+> Este README contém algumas informações básicas do controlador, e uma explicação das interfaces de comunicação. *Assim, possui o necessário para utilizar o projeto*. Maiores detalhes do funcionamento de outras partes podem ser encontradas no **manual.md** e também na documentação dos códigos.
 
 Para interação com o usuário existem duas interfaces de comunicação:
 - WiFi
@@ -96,3 +96,6 @@ Os comandos implementados são:
 - **!setpXXX**, onde XXX é um inteiro representando a quantidade de semiciclos ligados: Seta a relação de potência a ser enviada para as resistências. O período da modulação de potência é de 120 semiciclos, logo o valor enviado deve estar entre 0 e 120 (inclusivo), onde 0 é carga desligada e 120 é carga em plena potência. Automaticamente ativa o modo de potência fixa;
 
 > A formatação dos argumentos deve ser exatamente como descrita, ou o programa pode não responder adequadamente
+
+
+    Para mais detalhes
