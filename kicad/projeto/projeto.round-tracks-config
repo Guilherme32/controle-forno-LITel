@@ -1,4 +1,4 @@
 Default	True	2.0	3
 mains-control	True	2.0	3
 mains-power	True	2.0	3
-False	True	False
+True	True	False
