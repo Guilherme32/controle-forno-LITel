@@ -83,7 +83,7 @@ A comunicação ocorre através de comandos. Para enviar um comando, deve-se env
 
 Os comandos implementados são:
 - **!netinfo**: Devolve as informações de rede:
-    - SSiD, senha e ip do modo ap;
+    - SSID, senha e ip do modo ap;
     - Se estiver devidamente conectado no modo sta, SSID e IP desse modo;
     - Se não estiver, indica que o sta está desconectado;
 
