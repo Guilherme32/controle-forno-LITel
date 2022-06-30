@@ -4,15 +4,15 @@ O sistema de controle foi desenvolvido com um microcontrolador, um esp8266, prog
 
 A parte física pode ser dividida em algumas seções, que foram também separadas para maior clareza no esquemático do circuito (kicad/projeto/projeto.kicad_sch):
 
-## Divisão da parte física
+# Divisão da parte física
 
-### Sensor
+## Sensor
 
 O esp8266 possui apenas um conversor analógico - digital (adc), portanto foi necessário o uso de um multiplexador analógico (CD4051) para permitir a leitura de todos os sensores. Também, o adc suporta até 1V, enquanto o sensor pode enviar até 1.5V. Um divisor de tensão foi utilizado para reduzir essa pela metade, se encaixando com folga nos limites do microcontrolador.
 
 O adc possui uma precisão de 10 bits, ou 1024 valores. Isso significa uma precisão de 1/1024 = 0.977mV. O sensor utilizado (LM35) entrega 10mV/ºC, com precisão típica entre 0.2ºC -> 2mV e 0.4ºC -> 4mV. 
 
-### Status
+## Status
 
 Para visualização de alguns parâmetros diretamente na placa, três leds são utilizados:
 
@@ -22,24 +22,24 @@ Para visualização de alguns parâmetros diretamente na placa, três leds são 
 
 - Ligado: Liga diretamente na linha de 3.3V da placa, indicando quando o sistema está energizado.
 
-### Botões (Buttons)
+## Botões (Buttons)
 
 Alguns botões são necessários para o adequado funcionamento, principalmente para desenvolvimento.
 
 - Reset: O botão para resetar o esp;
 - Exit: Sempre que se programa utilizando o micropython, é importante deixar uma forma de fazer com que o programa termine, e inicie o [REPL](https://docs.micropython.org/en/latest/esp8266/tutorial/repl.html), para que seja possível atualizar os programas. *Também, esse botão é ligado no pino de flash do esp, que deve ser mantido em nível lógico baixo (pressionado) ao ligar para permitir o upload de novo firmware*.
 
-### Detecção de Zero (Zero Detection)
+## Detecção de Zero (Zero Detection)
 
 Para a estratégia de modulação implementada, é necessário que o microcontrolador saiba exatamente quando a tensão CA cruza 0V. Essa seção do circuito utiliza um diodo zener e um optoacoplador (4N25) para gerar um pulso exatamente nesse momento. 
 
 > O diodo zener foi utilizado para aumentar a largura do pulso, que não estava sendo detectado de forma consistente em testes com apenas o optoacoplador.
 
-### Driver da Carga (Load Driver)
+## Driver da Carga (Load Driver)
 
 Essa parte é a responsável por ativar a resistência da saída, através do uso de um optoacoplador, que permite a condução entre o Gate e o terminal A2, logo ativando a condução do triac, quando recebe um sinal de nível alto do microcontrolador.
 
-### Alimentação (Power)
+## Alimentação (Power)
 
 O circuito é alimentado com 5V, que pode vir tanto do conversor USB-serial (se estiver sendo utilizado) quanto de uma alimentação externa com um conector CC de 2.5mm. Os capacitores são utilizados para reduzir ruído da fonte e para garantir que, caso o microcontrolador consuma uma corrente mais alta do que a fonte / conversor são capazes de suprir por um curto período de tempo, o circuito ainda funcione.
 
@@ -47,8 +47,28 @@ O circuito é alimentado com 5V, que pode vir tanto do conversor USB-serial (se 
 
 A alimentação CA é para a carga, e é protegida por um fusível (o instalado na montagem foi de 12A).
 
-### Serial
+## Serial
 
 Aqui há apenas a conexão direta entre os pinos de comunicação serial do microcontrolador com dois pinos (TX, RX), e a conexão da alimentação também em dois pinos (5V, GND)
 
 > Ao longo de todo o circuito, estão presentes diversos jumpers. Esses foram usados apenas para facilitar a construção da PCB
+
+
+# Interfaces de comunicação
+
+# O Software
+
+Para o projeto, foram desenvolvidos códigos para o microcontrolador (software embarcado), para automatizar tarefas, e para interface com o usuário com uma página web.
+
+O código da página web foi desenvolvido em html, css e js, apenas como um supervisório, e os detalhes de seu conteúdo podem ser vistos nos README.md e também nas documentações e comentários dentro dos códigos.
+
+O código para automatizar as tarefas está em tasks.py, na pasta dos códigos para o esp8266. Cada função é uma task que pode ser invocada pelo cmd com o comando (inv "task"), como parte da biblioteca **[invoke](https://www.pyinvoke.org)**. Nele estão funções referentes à interação com o sistema de arquivos do micropython.
+
+> Vale notar que o código utiliza a porta serial que o meu computador utilizou no momento de desenvolvimento (COM3)
+
+O software embarcado foi todo desenvolvido para ser concorrente, por meio da biblioteca uasyncio, a versão do micropython da asyncio. Cada parte do sistema foi dividido em um gerenciador, em um arquivo. Cada gerenciador possui sua corrotina assíncrona que deve ser iniciada e configurada no início do programa. Para as partes mais simples, deixarei uma breve explicação aqui. Para as mais complexas, dedicarei mais espaço aos detalhes.
+
+> Para mais detalhes em qualquer código, basta abrir e ler os comentários e documentações das funções e classes.
+
+- main.py: O ponto de entrada do programa do microprocessador. Cria os objetos responsáveis por cuidar de cada parte e também mantém o loop principal;
+
