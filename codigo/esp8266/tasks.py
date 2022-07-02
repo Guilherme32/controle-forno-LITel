@@ -3,6 +3,8 @@ import sys
 from invoke import task, context
 
 
+port = "COM3"
+
 @task()
 def send(c, filename, _compile=False, main=False, boot=False):
     # Procurar a possibilidade de um Enum aqui ^^^^
@@ -23,7 +25,7 @@ def send(c, filename, _compile=False, main=False, boot=False):
         filename = filename[:-3]
         filename += ".mpy"      # Usando o compilado como novo arquivo
 
-    command = f"ampy -p COM3 -b 115200 put {filename}"
+    command = f"ampy -p {port} -b 115200 put {filename}"
     command += " main.py" if main else ""
     command += " boot.py" if boot else ""
 
@@ -38,21 +40,21 @@ def send(c, filename, _compile=False, main=False, boot=False):
 
 @task()
 def ls(c):
-    command = "ampy -b 115200 -p COM3 ls"
+    command = f"ampy -b 115200 -p {port} ls"
     print(f"> {command}")
     c.run(command)
 
 
 @task()
 def rm(c, filename):
-    command = f"ampy -b 115200 -p COM3 rm {filename}"
+    command = f"ampy -b 115200 -p {port} rm {filename}"
     print(f"> {command}")
     c.run(command)
 
 
 @task()
 def mkdir(c, dirname):
-    command = f"ampy -b 115200 -p COM3 mkdir {dirname}"
+    command = f"ampy -b 115200 -p {port} mkdir {dirname}"
     print(f"> {command}")
     c.run(command)
 
