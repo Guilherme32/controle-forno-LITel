@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
 function get_ap_info(){
+    // Busca as informacoes do modo ap do esp
+
     const request = new Request("api/ap_info", {
         method: "get"
     });
@@ -23,6 +25,8 @@ function get_ap_info(){
 
 
 function get_sta_info(get_ssid=false){
+    // Busca as informacoes do modo sta do esp
+
     const request = new Request("api/sta_info", {
         method: "get"
     });
@@ -50,6 +54,8 @@ function get_sta_info(get_ssid=false){
 
 
 function submit_sta_config(){
+    // Envia as novas configuracoes para conexão do modo sta do esp
+
     const sta_ssid = document.querySelector("#sta_ssid").value;
     const sta_password = document.querySelector("#sta_password").value;
 

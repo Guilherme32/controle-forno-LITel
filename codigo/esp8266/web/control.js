@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     setInterval(() => {update_interface(init_time, plot_data, chart)}, 1000);
 
-    // Buf Fix. O gráfico não atualizava o tamanho. Isso corrige
+    // Buf Fix. O grafico não atualizava o tamanho. Isso corrige
     window.addEventListener("resize", () => {
         const graph_container = document.querySelector("#graph_container");
         var size = { height: graph_container.offsetHeight - 10 };
@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 function update_operation_mode(){
+    // Chamado quando o usuario escolhe um método de funcionamento para atualizar essa 
+    // parte da pagina
+
     if(document.querySelector("#mode_set_point").checked){
         document.querySelector("#set_point_div").classList = "";
         document.querySelector("#power_div").classList = "disabled";
@@ -42,6 +45,9 @@ function update_operation_mode(){
 }
 
 function submit_operation(){
+    // Envia as informacoes de operacao para o esp. Basicamente decide o modo e chama 
+    // a funcao para enviar o correspondente
+
     if(document.querySelector("#mode_set_point").checked){
         return submit_set_point();
     } else {
@@ -50,6 +56,8 @@ function submit_operation(){
 }
 
 function submit_set_point(){
+    // Envia o set point novo para o sistema de controle 
+
     const set_point = parseFloat(document.querySelector("#set_point_div input").value);
 
     if(set_point === NaN){
@@ -77,6 +85,8 @@ function submit_set_point(){
 }
 
 function submit_power(){
+    // Envia a potência nova para o sistema de controle 
+
     var power = parseInt(document.querySelector("#power_div input").value);
     if(power === NaN){
         alert("Digite um número");
@@ -105,6 +115,10 @@ function submit_power(){
 }
 
 function update_interface(init_time, plot_data, chart){
+    // Adquire algumas informacoes do servidor para atualizar a interface. Atualiza a 
+    // potencia enviada a carga, o estado do sistema, a temperatura no sensor principal, 
+    // e o grafico
+
     const request = new Request("api/controller_info", {
         method: "get"
     });
@@ -154,6 +168,8 @@ function update_interface(init_time, plot_data, chart){
 }
 
 function start_chart(init_data){
+    // Inicializa o grafico sem informacoes
+    
     var chart = c3.generate({
         bindto: "#graph",
         data: {
