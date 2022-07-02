@@ -53,9 +53,6 @@ Aqui há apenas a conexão direta entre os pinos de comunicação serial do micr
 
 > Ao longo de todo o circuito, estão presentes diversos jumpers. Esses foram usados apenas para facilitar a construção da PCB
 
-
-# Interfaces de comunicação
-
 # O Software
 
 Para o projeto, foram desenvolvidos códigos para o microcontrolador (software embarcado), para automatizar tarefas, e para interface com o usuário com uma página web.
@@ -71,4 +68,73 @@ O software embarcado foi todo desenvolvido para ser concorrente, por meio da bib
 > Para mais detalhes em qualquer código, basta abrir e ler os comentários e documentações das funções e classes.
 
 - main.py: O ponto de entrada do programa do microprocessador. Cria os objetos responsáveis por cuidar de cada parte e também mantém o loop principal;
+
+- interrupt_exit.py: Ao desenvolver um programa com o micropython, é sempre importante garantir uma forma de finalizar o código, logo iniciando a REPL por serial. Sem isso, é consideravelmente mais complicado de enviar novos arquivos para o microcontrolador;
+
+- network_handler.py: Cuida da conexão WiFi do esp8266, tanto a inicialização do modo *Access Point* quanto de tentar conectar a uma rede externa no modo *Station*;
+
+- sensor_reader.py: Define a classe responsável por fazer a leitura periódica de todos os sensores, manter salvos os valores de forma acessível até a próxima leitura e transformar esse valor em uma temperatura em ºC;
+
+- serial_comm.py: Define a classe responsável por tratar as entradas recebidas na porta serial, e ativar os devidos comandos quando os seus padrões forem detectados;
+
+- server.py: Implementa um servidor http extremamente leve e simples, apenas para permitir a transmissão dos arquivos da página web, e permitir a comunicação entre as páginas e o sistema. A interface web foi apresentada de forma mais extensa no README.md.
+
+## controller.py
+
+Esse script define a classe responsável por enviar à carga a potência desejada, e também por periodicamente invocar controlador propriamente dito (que toma a decisão). O algoritmo de modulação de potência utilizado foi um baseado no por detecção de zero (*Zero Detection*). O mais comumente visto dessa técnica é permitir a condução em X semiciclos, enquanto bloqueia a condução em Y. A condução do disposotivo é sempre acionada quando  tensão cruza 0V, garantindo o mínimo possível de perdas por chaveamento e também permitindo mais precisão na potência controlada, se comparado ao método por PWM, por exemplo (considerando carga atendida em CA acionada por um TRIAC). O que difere no método uilizado é a distribuição dos semiciclos de condução e corte, que não mais são consecutivos no período de funcionamento.
+
+No método utilizado, a potência é representada por dois valores (X, Y), onde X é a quantidade de semiciclos de condução, Y a quantidade de semiciclos em corte, e X+Y o período total. Para determinar o que deve ser o semiciclo atual, uma variável é inicializada em 0 e armazenada, chamada de contador de potência (*power_counter*). Sempre que a borda entre dois semiciclos é percebida (V cruza 0V), o algoritmo define o tipo de semiciclo seguindo o seguinte pseudocódigo:
+
+- Se **contador** > 0:  
+    **contador** -= Y  
+    **saída** = condução  
+- Se **contador** \<= 0:  
+    **contador** += x  
+    **saída** = corte
+
+Esse código mantém a relação de potência, mas torna a distribuição mais homogênea. Vale notar que ao final do período (X+Y semiciclos), o contador de potência é sempre 0. Isso permite uma troca de potência sem efeitos colaterais de causados por um valor inicial desse contador, caso a mudança seja feita nesse momento.
+
+### Um pequeno exemplo parar ilustrar a modulação
+
+Potência modulada para 60%, com período de 5 semiciclos:
+
+X = 3, Y = 2
+
+| semiciclo | contador | contador' | saída    |  
+| --------- | -------- | --------- | -------- |
+| 0         | 0        | 3         | corte    |
+| 1         | 3        | 1         | condução |
+| 2         | 1        | -1        | condução |
+| 3         | -1       | 2         | corte    |
+| 4         | 2        | 0         | condução |
+
+
+## fuzzy_controller.py
+
+Esse script é o que de fato implementa o sistema de controle. Ele é, como o nome sugere, um controlador de lógica difusa (Fuzzy Logic Controller - FLC). O controlador foi baseado no de primeira ordem utilizado no trabalho original de controle do forno ([TCC de leonardo Serapião](https://www.ufjf.br/mecanica/files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-Ara%c3%bajo-Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)). Controladores difusos possuem bom desempenho para controle de sistemas não lineares, e com possíveis perturbações exernas, que é exatamente a situação do controle de teperatura de um forno.
+
+A lógica difusa funciona de forma parecida com uma lógica digital, porém com saltos suaves entre variáveis. As variáveis difusa podem assumir valores entre 0 e 1, representando o nível de pertencimento do valor ao espaço da variável. Esse valor será chamado de $\mu$. Em uma lógica binária, o valor seria 0 ou 1, representando que pertence ao espaço ou não, não o quanto pertence.
+
+### O controle
+
+O controle se dá da seguinte maneira:
+
+Primeiro, para cada entrada, o seu valor é codificado em algumas variáveis fuzzy, através de um processo chamado de fuzzificação.
+
+Essas variáveis difusas são então passadas por uma lógica, similar e análoga a uma digital, que determina novas variáveis difusas de saída em função das de entrada.
+
+As variáveis de saída são transformadas em um único valor real ($\Delta_y$), em um processo chamado de defuzzificação e, por fim, a saída é atualizada com esse valor de saída, na forma:
+
+$y[n] = y[n-1] + \Delta_y[n]$
+
+
+### Entrada
+
+Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo
+
+
+
+
+
+
 
