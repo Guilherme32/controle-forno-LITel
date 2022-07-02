@@ -121,7 +121,7 @@ O controle se dá da seguinte maneira:
 
 Primeiro, para cada entrada, o seu valor é codificado em algumas variáveis fuzzy, através de um processo chamado de fuzzificação.
 
-Essas variáveis difusas são então passadas por uma lógica, similar e análoga a uma digital, que determina novas variáveis difusas de saída em função das de entrada.
+Essas variáveis difusas são então passadas por diversas regras, similares e análogas a circuitos lógicos, que determinam novas variáveis difusas de saída em função das de entrada. Cada regra mapeia um conjunto de variáveis de entrada a uma única variável de saída, mas mais de uma regra pode usar a mesma variável de saída, neste caso devem ser combinadas.
 
 As variáveis de saída são transformadas em um único valor real ($\Delta_y$), em um processo chamado de defuzzificação e, por fim, a saída é atualizada com esse valor de saída, na forma:
 
@@ -130,7 +130,28 @@ $y[n] = y[n-1] + \Delta_y[n]$
 
 ### Entrada
 
-Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo
+Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo.
+
+> Na verdade, para facilitar os cálculos, todo o controlador foi implentado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no adc, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. Ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
+
+Para o erro, 3 variáveis foram definidas: N (negative), Z (zero), P (positive). Para o erro, foram definidas 5: NL (negative large), NS (negative small), Z (zero), PS (positive small), PL (positive large). Para ambas, a fuzzifição foi singleton com funções de participação (*membership functions*) triangulares. Os limites podem vistos no gráfico: 
+
+#todo colocar gráfico
+
+### Regras
+#todo passar regras
+
+### Operações usadas
+Foram consideradas as seguintes definições para os operadores:
+- A OU B: O maior valor entre A e B;
+- A E B: O menor valor entre A e B.
+
+### Saída
+
+A saída é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico: 
+
+#todo colocar gráfico
+
 
 
 
