@@ -130,7 +130,7 @@ $y[n] = y[n-1] + \Delta_y[n]$
 
 ### Entrada
 
-Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo.
+Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes.
 
 > Na verdade, para facilitar os cálculos, todo o controlador foi implentado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no adc, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. Ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
 
