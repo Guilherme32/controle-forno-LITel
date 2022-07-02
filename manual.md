@@ -134,14 +134,37 @@ Para a entrada, dois valores foram analizados: O erro e a variação da temperat
 
 > Na verdade, para facilitar os cálculos, todo o controlador foi implentado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no adc, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. Ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
 
-Para a variação da temperatura, 3 variáveis foram definidas: N (negative), Z (zero), P (positive). Para o erro, foram definidas 5: NL (negative large), NS (negative small), Z (zero), PS (positive small), PL (positive large). Para ambas, a fuzzifição foi singleton com funções de participação (*membership functions*) triangulares. Os limites podem vistos nos gráficos: 
+Para a variação da temperatura ($\Delta T$), 3 variáveis foram definidas: N (negative), Z (zero), P (positive). Para o erro ($e_T$), foram definidas 5: NL (negative large), NS (negative small), Z (zero), PS (positive small), PL (positive large). Para ambas, a fuzzifição foi singleton com funções de participação (*membership functions*) triangulares. Os limites podem vistos nos gráficos: 
 
 ![Participação para variáveis de Delta T](/imgs/deltaT.svg "Participação para variáveis de Delta T")
 
 ![Participação para variáveis de erro](/imgs/erro.svg "Participação para variáveis de erro")
 
 ### Regras
-#todo passar regras
+
+- Se $e_T$ é NL, P é PL
+- Se $e_T$ é PL, P é NL
+
+---
+
+- Se $e_T$ é NS e $\Delta T$ é P, $\Delta P$ é Z
+- Se $e_T$ é NS e $\Delta T$ é Z, $\Delta P$ é PS
+- Se $e_T$ é NS e $\Delta T$ é N, $\Delta P$ é PL
+
+---
+
+- Se $e_T$ é PS e $\Delta T$ é N, $\Delta P$ é Z
+- Se $e_T$ é PS e $\Delta T$ é Z, $\Delta P$ é NS
+- Se $e_T$ é PS e $\Delta T$ é P, $\Delta P$ é NL
+
+---
+
+- Se $e_T$ é Z e $\Delta T$ é N, $\Delta P$ é PS
+- Se $e_T$ é Z e $\Delta T$ é Z, $\Delta P$ é Z
+- Se $e_T$ é Z e $\Delta T$ é P, $\Delta P$ é NS
+
+> As regras com mesma variável de saída foram combinadas com um OU
+ 
 
 ### Operações usadas
 Foram consideradas as seguintes definições para os operadores:
@@ -152,7 +175,7 @@ Foram consideradas as seguintes definições para os operadores:
 
 A saída é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico: 
 
-![Participação para variáveis de saída](/imgs/saida.svg "Participação para variáveis de saídav")
+![Participação para variáveis de saída](/imgs/saida.svg "Participação para variáveis de saída")
 
 
 
