@@ -3,7 +3,7 @@ import sys
 from invoke import task, context
 
 
-port = "COM3"
+port = "COM4"
 
 @task()
 def send(c, filename, _compile=False, main=False, boot=False):
@@ -67,6 +67,7 @@ def send_all(c):
         pass
 
     send(c, "controller.py", _compile=True)
+    send(c, "fuzzy_controller.py", _compile=True)
     send(c, "interrupt_exit.py", _compile=True)
     send(c, "network_handler.py", _compile=True)
     send(c, "sensor_reader.py", _compile=True)
@@ -81,7 +82,7 @@ def send_all(c):
     send(c, "web/style.css")
     send(c, "web/d3.v4.min.js.gz")
     send(c, "web/c3.min.js.gz")
-    send(c, "web/c3.min.css.gz")
+    send(c, "web/c3.min.css")
     send(c, "web/connection.js")
     send(c, "web/control.js")
 
