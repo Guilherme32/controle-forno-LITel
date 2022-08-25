@@ -1,6 +1,8 @@
 import uasyncio
 
 import gc
+from machine import freq
+freq(160000000)
 
 gc.collect()
 from controller import Controller
