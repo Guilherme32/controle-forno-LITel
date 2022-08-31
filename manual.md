@@ -127,7 +127,7 @@ As variáveis de saída são transformadas em um único valor real (y), em um pr
 
 ### Entrada
 
-Para a entrada, dois valores foram analisados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes.
+Para a entrada, dois valores foram analisados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes. Ademais, a variação de temperatura é analisada ao longo do período de chamada do algoritmo de controle (30 segundos).
 
 > Na verdade, para facilitar os cálculos, todo o controlador foi implementado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no ADC, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. A ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
 
@@ -140,7 +140,6 @@ Para a variação da temperatura ($\Delta T$), 3 variáveis foram definidas: N (
 ### Regras
 Para a saída, as variáveis estabelecidas foram Z (zero), ST (estabilização), baixo (L),
 médio (M) e alto (H).
-Z, ST, L, M, H
 
 - Se $e_T$ é P, Y é Z
 - Se $\Delta_T$ é P, Y é Z
@@ -166,9 +165,7 @@ Z, ST, L, M, H
 
 ---
 
-
 > As regras com mesma variável de saída foram combinadas com um OU
-
 
 ### Operações usadas
 Foram consideradas as seguintes definições para os operadores:
