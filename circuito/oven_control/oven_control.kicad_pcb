@@ -2104,6 +2104,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "D:/bolsa/controle_forno/circuito/custom_footprints/DCJ200-10-A-K1-K--3DModel-STEP-56544.STEP"
+      (offset (xyz 0 -7 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 -180 180))
+    )
   )
 
   (footprint "Capacitor_THT:C_Radial_D10.0mm_H16.0mm_P5.00mm" (layer "B.Cu")

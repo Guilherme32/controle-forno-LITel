@@ -346,7 +346,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "projeto.kicad_pro",
+    "filename": "oven_control.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -431,7 +431,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "../oven_control.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
