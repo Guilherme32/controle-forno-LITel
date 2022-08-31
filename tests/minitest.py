@@ -5,9 +5,9 @@ import os
 
 
 step_values = list(range(40, 141, 20))
-step_time = 10
+step_time = 20 * 60
 sample_time = 1
-ip_addr = "192.168.0.101"
+ip_addr = "192.168.4.1"
 back_forth = True
 
 init_time = time()
