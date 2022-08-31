@@ -63,10 +63,12 @@ class Controller:
             return
         self.last_tick = new_tick
 
-        if self.cycles == self.period:
+        if self.cycles % self.period == 0:
+            self.check_steady_state()
+            
+        if self.cycles == (30 * self.period):
             self.cycles = 0
             self.update_ratio()
-            self.check_steady_state()
 
         if self.power_counter > 0:
             self.power_counter -= self.power_ratio[1]
@@ -94,7 +96,7 @@ class Controller:
             self.last_read = self.read_sensor()
             self.steady_count = 0
 
-        if self.steady_count >= 10:
+        if self.steady_count >= 30:
             self.steady_pin.value(1)
         else:
             self.steady_pin.value(0)

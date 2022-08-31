@@ -1,10 +1,10 @@
 import micropython
 
 NL = micropython.const(0)
-NS = micropython.const(1)
-Z  = micropython.const(2)
-PS = micropython.const(3)
-PL = micropython.const(4)
+NM = micropython.const(1)
+NS  = micropython.const(2)
+Z = micropython.const(3)
+P = micropython.const(4)
 
 
 @micropython.viper
@@ -43,7 +43,7 @@ class FuzzyController:
                           # NL, NS, Z, PS, PL
         self.fuzzy_error = (0,  0,  0, 0,  0)
                               # NL, NS, Z, PS, PL
-        self.fuzzy_power_add = (0, 0, 0, 0, 0)
+        self.fuzzy_power = (0, 0, 0, 0, 0)
 
         self.power = 0
         self.max_power = max_power
@@ -56,52 +56,50 @@ class FuzzyController:
         self.last_temp = temp
 
         self.fuzzy_delta_temp = (
-            fuzzify_triangular(delta_temp, -6, 6, -1),
-            fuzzify_triangular(delta_temp, 0, 6, 0),
-            fuzzify_triangular(delta_temp, 6, 6, 1)
+            fuzzify_triangular(delta_temp, -15, 15, -1),
+            fuzzify_triangular(delta_temp, 0, 15, 0),
+            fuzzify_triangular(delta_temp, 15, 15, 1)
         )
 
     def fuzzify_error(self, temp: int) -> None:
         error = temp - int(self.set_point)
         self.fuzzy_error = (
-            fuzzify_triangular(error, -103, 52, -1),
-            fuzzify_triangular(error, -52,  52,  0),
-            fuzzify_triangular(error,  0,   52,  0),
-            fuzzify_triangular(error,  52,  52,  0),
-            fuzzify_triangular(error,  103, 52,  1)
+            fuzzify_triangular(error, -45, 15, -1),
+            fuzzify_triangular(error, -30, 15,  0),
+            fuzzify_triangular(error, -15, 15,  0),
+            fuzzify_triangular(error,  0,  15,  0),
+            fuzzify_triangular(error,  15, 15,  1)
         )
 
     def calculate_power(self):
-        self.fuzzy_power_add = (
-            _max(self.fuzzy_error[PL],
-                 _min(self.fuzzy_error[PS], self.fuzzy_delta_temp[2])),
-
-            _max(_min(self.fuzzy_error[PS], self.fuzzy_delta_temp[1]),
-                 _min(self.fuzzy_error[Z], self.fuzzy_delta_temp[2])),
-
-            max(_min(self.fuzzy_error[Z], self.fuzzy_delta_temp[1]),
-                _min(self.fuzzy_error[NS], self.fuzzy_delta_temp[2]),
-                _min(self.fuzzy_error[PS], self.fuzzy_delta_temp[0])),
-
-            _max(_min(self.fuzzy_error[NS], self.fuzzy_delta_temp[1]),
-                 _min(self.fuzzy_error[Z], self.fuzzy_delta_temp[0])),
-
-            _max(self.fuzzy_error[NL],
-                 _min(self.fuzzy_error[NS], self.fuzzy_delta_temp[0])),
+        self.fuzzy_power = (
+            max(self.fuzzy_error[P],
+                self.fuzzy_delta_temp[2]),
+            
+            max(min(self.fuzzy_error[Z], self.fuzzy_delta_temp[0]),
+                min(self.fuzzy_error[NS], self.fuzzy_delta_temp[2])),
+            
+            max(self.fuzzy_error[NM],
+                min(self.fuzzy_error[NS], self.fuzzy_delta_temp[1])),
+            
+            max(self.fuzzy_error[NL],
+                min(self.fuzzy_error[NM], self.fuzzy_delta_temp[1])),
+            
+            min(self.fuzzy_error[NL], self.fuzzy_delta_temp[1])
         )
 
     def deffuzify_power(self):
-        w_power_add = (-30, -15, 0, 15, 30)     # Support member value
+        w_power = (0, 10, 20, 35, 50)     # Support member value
 
-        power_add = 0
+        power = 0
         membership_sum = 0
         for i in range(5):
-            power_add += self.fuzzy_power_add[i] * w_power_add[i]
-            membership_sum += self.fuzzy_power_add[i]
+            power += self.fuzzy_power[i] * w_power[i]
+            membership_sum += self.fuzzy_power[i]
 
-        power_add //= membership_sum
+        power //= membership_sum
 
-        self.power += power_add
+        self.power = power
 
         if self.power > self.max_power:
             self.power = self.max_power

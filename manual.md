@@ -10,7 +10,7 @@ A parte física pode ser dividida em algumas seções, que foram também separad
 
 O esp8266 possui apenas um conversor analógico - digital (adc), portanto foi necessário o uso de um multiplexador analógico (CD4051) para permitir a leitura de todos os sensores. Também, o adc suporta até 1V, enquanto o sensor pode enviar até 1.5V. Um divisor de tensão foi utilizado para reduzir essa pela metade, se encaixando com folga nos limites do microcontrolador.
 
-O adc possui uma precisão de 10 bits, ou 1024 valores. Isso significa uma precisão de 1/1024 = 0.977mV. O sensor utilizado (LM35) entrega 10mV/ºC, com precisão típica entre 0.2ºC -> 2mV e 0.4ºC -> 4mV. 
+O adc possui uma precisão de 10 bits, ou 1024 valores. Isso significa uma precisão de 1/1024 = 0.977mV. O sensor utilizado (LM35) entrega 10mV/ºC, com precisão típica entre 0.2ºC -> 2mV e 0.4ºC -> 4mV.
 
 ## Status
 
@@ -31,7 +31,7 @@ Alguns botões são necessários para o adequado funcionamento, principalmente p
 
 ## Detecção de Zero (Zero Detection)
 
-Para a estratégia de modulação implementada, é necessário que o microcontrolador saiba exatamente quando a tensão CA cruza 0V. Essa seção do circuito utiliza um diodo zener e um optoacoplador (4N25) para gerar um pulso exatamente nesse momento. 
+Para a estratégia de modulação implementada, é necessário que o microcontrolador saiba exatamente quando a tensão CA cruza 0V. Essa seção do circuito utiliza um diodo zener e um optoacoplador (4N25) para gerar um pulso exatamente nesse momento.
 
 > O diodo zener foi utilizado para aumentar a largura do pulso, que não estava sendo detectado de forma consistente em testes com apenas o optoacoplador.
 
@@ -81,7 +81,7 @@ O software embarcado foi todo desenvolvido para ser concorrente, por meio da bib
 
 ## controller.py
 
-Esse script define a classe responsável por enviar à carga a potência desejada, e também por periodicamente invocar controlador propriamente dito (que toma a decisão). O algoritmo de modulação de potência utilizado foi um baseado no por detecção de zero (*Zero Detection*). O mais comumente visto dessa técnica é permitir a condução em X semiciclos, enquanto bloqueia a condução em Y. A condução do disposotivo é sempre acionada quando  tensão cruza 0V, garantindo o mínimo possível de perdas por chaveamento e também permitindo mais precisão na potência controlada, se comparado ao método por PWM, por exemplo (considerando carga atendida em CA acionada por um TRIAC). O que difere no método uilizado é a distribuição dos semiciclos de condução e corte, que não mais são consecutivos no período de funcionamento.
+Esse script define a classe responsável por enviar à carga a potência desejada, e também por periodicamente invocar controlador propriamente dito (que toma a decisão). O algoritmo de modulação de potência utilizado foi um baseado no por detecção de zero (*Zero Detection*). O mais comumente visto dessa técnica é permitir a condução em X semiciclos, enquanto bloqueia a condução em Y. A condução do dispositivo é sempre acionada quando  tensão cruza 0V, garantindo o mínimo possível de perdas por chaveamento e também permitindo mais precisão na potência controlada, se comparado ao método por PWM, por exemplo (considerando carga atendida em CA acionada por um TRIAC). O que difere no método utilizado é a distribuição dos semiciclos de condução e corte, que não mais são consecutivos no período de funcionamento.
 
 No método utilizado, a potência é representada por dois valores (X, Y), onde X é a quantidade de semiciclos de condução, Y a quantidade de semiciclos em corte, e X+Y o período total. Para determinar o que deve ser o semiciclo atual, uma variável é inicializada em 0 e armazenada, chamada de contador de potência (*power_counter*). Sempre que a borda entre dois semiciclos é percebida (V cruza 0V), o algoritmo define o tipo de semiciclo seguindo o seguinte pseudocódigo:
 
@@ -111,7 +111,7 @@ X = 3, Y = 2
 
 ## fuzzy_controller.py
 
-Esse script é o que de fato implementa o sistema de controle. Ele é, como o nome sugere, um controlador de lógica difusa (Fuzzy Logic Controller - FLC). O controlador foi baseado no de primeira ordem utilizado no trabalho original de controle do forno ([TCC de leonardo Serapião](https://www.ufjf.br/mecanica/files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-Ara%c3%bajo-Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)). Controladores difusos possuem bom desempenho para controle de sistemas não lineares, e com possíveis perturbações exernas, que é exatamente a situação do controle de teperatura de um forno.
+Esse script é o que de fato implementa o sistema de controle. Ele é, como o nome sugere, um controlador de lógica difusa (Fuzzy Logic Controller - FLC). O controlador foi baseado no de primeira ordem utilizado no trabalho original de controle do forno ([TCC de Leonardo Serapião](https://www.ufjf.br/mecanica/files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-Ara%c3%bajo-Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)). Controladores difusos possuem bom desempenho para controle de sistemas não lineares, e com possíveis perturbações externas, que é exatamente a situação do controle de temperatura de um forno.
 
 A lógica difusa funciona de forma parecida com uma lógica digital, porém com saltos suaves entre variáveis. As variáveis difusa podem assumir valores entre 0 e 1, representando o nível de pertencimento do valor ao espaço da variável. Esse valor será chamado de $\mu$. Em uma lógica binária, o valor seria 0 ou 1, representando que pertence ao espaço ou não, não o quanto pertence.
 
@@ -123,48 +123,52 @@ Primeiro, para cada entrada, o seu valor é codificado em algumas variáveis fuz
 
 Essas variáveis difusas são então passadas por diversas regras, similares e análogas a circuitos lógicos, que determinam novas variáveis difusas de saída em função das de entrada. Cada regra mapeia um conjunto de variáveis de entrada a uma única variável de saída, mas mais de uma regra pode usar a mesma variável de saída, neste caso devem ser combinadas.
 
-As variáveis de saída são transformadas em um único valor real ($\Delta_y$), em um processo chamado de defuzzificação e, por fim, a saída é atualizada com esse valor de saída, na forma:
-
-$y[n] = y[n-1] + \Delta_y[n]$
-
+As variáveis de saída são transformadas em um único valor real (y), em um processo chamado de defuzzificação.
 
 ### Entrada
 
-Para a entrada, dois valores foram analizados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes.
+Para a entrada, dois valores foram analisados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes.
 
-> Na verdade, para facilitar os cálculos, todo o controlador foi implentado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no adc, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. Ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
+> Na verdade, para facilitar os cálculos, todo o controlador foi implementado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no ADC, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. A ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
 
-Para a variação da temperatura ($\Delta T$), 3 variáveis foram definidas: N (negative), Z (zero), P (positive). Para o erro ($e_T$), foram definidas 5: NL (negative large), NS (negative small), Z (zero), PS (positive small), PL (positive large). Para ambas, a fuzzifição foi singleton com funções de participação (*membership functions*) triangulares. Os limites podem vistos nos gráficos: 
+Para a variação da temperatura ($\Delta T$), 3 variáveis foram definidas: N (negative), Z (zero), P (positive). Para o erro ($e_T$), foram definidas 5: NL (negative large), NM (negative medium), NS (negative small), Z (zero) e P (positive). Para ambas, a fuzzifição foi singleton com funções de participação (*membership functions*) triangulares. Os limites podem vistos nos gráficos:
 
 ![Participação para variáveis de Delta T](/imgs/deltaT.svg "Participação para variáveis de Delta T")
 
 ![Participação para variáveis de erro](/imgs/erro.svg "Participação para variáveis de erro")
 
 ### Regras
+Para a saída, as variáveis estabelecidas foram Z (zero), ST (estabilização), baixo (L),
+médio (M) e alto (H).
+Z, ST, L, M, H
 
-- Se $e_T$ é NL, P é PL
-- Se $e_T$ é PL, P é NL
-
----
-
-- Se $e_T$ é NS e $\Delta T$ é P, $\Delta P$ é Z
-- Se $e_T$ é NS e $\Delta T$ é Z, $\Delta P$ é PS
-- Se $e_T$ é NS e $\Delta T$ é N, $\Delta P$ é PL
+- Se $e_T$ é P, Y é Z
+- Se $\Delta_T$ é P, Y é Z
 
 ---
 
-- Se $e_T$ é PS e $\Delta T$ é N, $\Delta P$ é Z
-- Se $e_T$ é PS e $\Delta T$ é Z, $\Delta P$ é NS
-- Se $e_T$ é PS e $\Delta T$ é P, $\Delta P$ é NL
+- Se $e_T$ é Z e $\Delta_T$ é Z, Y é ST
+- Se $e_T$ é NS e $\Delta_T$ é P, Y é ST
 
 ---
 
-- Se $e_T$ é Z e $\Delta T$ é N, $\Delta P$ é PS
-- Se $e_T$ é Z e $\Delta T$ é Z, $\Delta P$ é Z
-- Se $e_T$ é Z e $\Delta T$ é P, $\Delta P$ é NS
+- Se $e_T$ é NM, Y é L
+- Se $e_T$ é NS e $\Delta_T$ é Z, Y é L
+
+---
+
+- Se $e_T$ é NL, Y é M
+- Se $e_T$ é NM e $\Delta_T$ é Z, Y é M
+
+---
+
+- Se $e_T$ é NL e $\Delta_T$ é Z, Y é H
+
+---
+
 
 > As regras com mesma variável de saída foram combinadas com um OU
- 
+
 
 ### Operações usadas
 Foram consideradas as seguintes definições para os operadores:
@@ -173,15 +177,6 @@ Foram consideradas as seguintes definições para os operadores:
 
 ### Saída
 
-A saída é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico: 
+A saída é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico:
 
 ![Participação para variáveis de saída](/imgs/saida.svg "Participação para variáveis de saída")
-
-
-
-
-
-
-
-
-
