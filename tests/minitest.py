@@ -5,7 +5,7 @@ import os
 
 
 step_values = list(range(40, 141, 20))
-step_time = 20 * 60
+step_time = 30 * 60
 sample_time = 1
 ip_addr = "192.168.4.1"
 back_forth = True
