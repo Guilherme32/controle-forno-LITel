@@ -36,13 +36,13 @@ def _max(value1: int, value2: int) -> int:
 class FuzzyController:
     def __init__(self, temp, max_power):
         self.set_point = 0
-        self.last_temp = temp
+        self.last_temp = temp               # 0~1024, a leitura do sensor
 
                                # N, Z, P
         self.fuzzy_delta_temp = (0, 0, 0)
-                          # NL, NS, Z, PS, PL
+                          # NL, NM, NS, Z, P
         self.fuzzy_error = (0,  0,  0, 0,  0)
-                              # NL, NS, Z, PS, PL
+                         # Z, ST, L, M, H
         self.fuzzy_power = (0, 0, 0, 0, 0)
 
         self.power = 0
@@ -64,11 +64,11 @@ class FuzzyController:
     def fuzzify_error(self, temp: int) -> None:
         error = temp - int(self.set_point)
         self.fuzzy_error = (
-            fuzzify_triangular(error, -45, 15, -1),
-            fuzzify_triangular(error, -30, 15,  0),
-            fuzzify_triangular(error, -15, 15,  0),
-            fuzzify_triangular(error,  0,  15,  0),
-            fuzzify_triangular(error,  15, 15,  1)
+            fuzzify_triangular(error, -150, 50, -1),
+            fuzzify_triangular(error, -100, 50,  0),
+            fuzzify_triangular(error, -50, 50,  0),
+            fuzzify_triangular(error,  0,  50,  0),
+            fuzzify_triangular(error,  50, 50,  1)
         )
 
     def calculate_power(self):
@@ -76,7 +76,7 @@ class FuzzyController:
             max(self.fuzzy_error[P],
                 self.fuzzy_delta_temp[2]),
             
-            max(min(self.fuzzy_error[Z], self.fuzzy_delta_temp[0]),
+            max(self.fuzzy_error[Z],
                 min(self.fuzzy_error[NS], self.fuzzy_delta_temp[2])),
             
             max(self.fuzzy_error[NM],
@@ -89,8 +89,7 @@ class FuzzyController:
         )
 
     def deffuzify_power(self):
-        w_power = (0, 10, 20, 35, 50)     # Support member value
-
+        w_power = (0, 6, 20, 35, 50)     # Support member value
         power = 0
         membership_sum = 0
         for i in range(5):

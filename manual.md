@@ -146,7 +146,7 @@ médio (M) e alto (H).
 
 ---
 
-- Se $e_T$ é Z e $\Delta_T$ é Z, Y é ST
+- Se $e_T$ é Z, Y é ST
 - Se $e_T$ é NS e $\Delta_T$ é P, Y é ST
 
 ---

@@ -4,6 +4,7 @@ import time
 
 from fuzzy_controller import FuzzyController
 
+# untested - change in steady state detection
 
 class Controller:
     def __init__(self, interrupt_pin: int,
@@ -66,7 +67,7 @@ class Controller:
         if self.cycles % self.period == 0:
             self.check_steady_state()
             
-        if self.cycles == (30 * self.period):
+        if self.cycles >= (30 * self.period):
             self.cycles = 0
             self.update_ratio()
 
@@ -90,13 +91,13 @@ class Controller:
         Confere se alcancou o regime permanente. Se chegou, indica no led
         correspondente
         """
-        if -1 <= self.read_sensor() - self.last_read <= 1:
+        if -4 <= self.read_sensor() - self.last_read <= 4:
             self.steady_count += 1
         else:
             self.last_read = self.read_sensor()
             self.steady_count = 0
 
-        if self.steady_count >= 30:
+        if self.steady_count >= 60:
             self.steady_pin.value(1)
         else:
             self.steady_pin.value(0)
