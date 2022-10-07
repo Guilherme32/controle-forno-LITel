@@ -11,6 +11,7 @@ class Controller:
                  output_pins,      # type: Tuple[int]
                  stability_pin: int,
                  read_function,     # type: Callable
+                 read_room_function,    # type: Callable
                  period=120,
                  max_target=140):
         """
@@ -36,6 +37,7 @@ class Controller:
         self.pir.irq(self.send_power, Pin.IRQ_RISING)
 
         self.read_sensor = read_function
+        self.read_room = read_room_function
         self.period = period
                             # ligado, desligado
         self.power_ratio = (0, self.period)
@@ -51,6 +53,7 @@ class Controller:
 
         self.fuzzy_controller = FuzzyController(read_function(), self.period)
         self.last_read = read_function()
+
         self.steady_count = 0
         self.steady_pin = Pin(stability_pin, Pin.OUT)
         self.steady_pin.value(0)
@@ -66,7 +69,7 @@ class Controller:
 
         if self.cycles % self.period == 0:
             self.check_steady_state()
-            
+
         if self.cycles >= (30 * self.period):
             self.cycles = 0
             self.update_ratio()
@@ -81,9 +84,15 @@ class Controller:
         self.cycles += 1
 
     def update_ratio(self):
-        """Atualiza a relacao de potencia a ser enviada a carga"""
+        """Atualiza a relacao de potencia a ser enviada a carga. O acumulador
+        só é invocado quando o sistema já alcançou o regime permanente mas ainda
+        não alcançou o set point"""
         if self.control:
-            power = self.fuzzy_controller.run_step(self.read_sensor())
+            power = self.fuzzy_controller.run_step(
+                self.read_sensor(),
+                self.read_room(),
+                self.steady_pin.value() \
+                    and (abs(self.read_sensor() - self.set_point) > 4))
             self.power_ratio = (power, self.period - power)
 
     def check_steady_state(self):
@@ -121,6 +130,7 @@ class Controller:
         """
         self.set_point = int(target * 5e-3 * 1024)
         self.fuzzy_controller.set_target(self.set_point)
+        self.fuzzy_controller.accumulated_power = 0
         self.control = True
         self.update_ratio()
         self.check_counter_limits()

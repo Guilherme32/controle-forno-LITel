@@ -4,11 +4,11 @@ import pandas as pd
 import os
 
 
-step_values = list(range(40, 141, 20))
-step_time = 30 * 60
+step_values = list(range(60, 141, 20))
+step_values = [120, ]
+step_time = 25 * 60
 sample_time = 1
-ip_addr = "192.168.4.1"
-back_forth = True
+ip_addr = "10.15.75.42"
 
 init_time = time()
 total_time = step_time * len(step_values)
@@ -22,6 +22,8 @@ while os.path.isdir(f"test_{str(i).zfill(2)}"):
 folder_path = f"test_{str(i).zfill(2)}"
 os.mkdir(folder_path)
 
+fails = 0
+
 for i, value in enumerate(step_values):
     this_time = time() - init_time
     df = pd.DataFrame()
@@ -31,18 +33,24 @@ for i, value in enumerate(step_values):
         sleep(sample_time)
         this_time = time() - init_time
         print(f"\rTestando {value}ºC ({i+1}/{len(step_values)}), "
-              f"tempo restante: {(total_time - this_time)/60:.1f}min", end="")
+              f"tempo restante: {(total_time - this_time)/60:.1f}min"
+              f" - failed {fails}         ", end="")
 
-        resp = get(f"http://{ip_addr}/api/controller_info")
-        resp = resp.json()
-        set_point = resp["set_point"]
-        resp = {f"S{x+1}": y for x, y in enumerate(resp["temperatures"])}
-        resp["set_point"] = set_point
-        resp["time"] = this_time
-        resp = {key: [value, ] for key, value in resp.items()}
+        try:
+            resp = get(f"http://{ip_addr}/api/controller_info", timeout=2)
+            resp = resp.json()
+            set_point = resp["set_point"]
+            power = resp["power_ratio"]
+            resp = {f"S{x+1}": y for x, y in enumerate(resp["temperatures"])}
+            resp["set_point"] = set_point
+            resp["power"] = power
+            resp["time"] = this_time
+            resp = {key: [value, ] for key, value in resp.items()}
 
-        df = pd.concat((df, pd.DataFrame.from_dict(resp)), ignore_index=True)
+            df = pd.concat((df, pd.DataFrame.from_dict(resp)), ignore_index=True)
+        except:
+            fails += 1
 
-    df.to_csv(f"{folder_path}/test_{i}_{value}.csv")
+    df.to_csv(f"{folder_path}/test_{i}_{str(value).zfill(3)}.csv")
 
 print("\rTeste finalizado com sucesso")

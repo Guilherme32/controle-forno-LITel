@@ -48,6 +48,11 @@ class FuzzyController:
         self.power = 0
         self.max_power = max_power
 
+        self.accumulator_count = 0
+                                # N, Z, P
+        self.fuzzy_accumulator = (0, 0, 0)
+        self.accumulated_power = 0
+
     def set_target(self, value):
         self.set_point = value
 
@@ -75,21 +80,26 @@ class FuzzyController:
         self.fuzzy_power = (
             max(self.fuzzy_error[P],
                 self.fuzzy_delta_temp[2]),
-            
+
             max(self.fuzzy_error[Z],
                 min(self.fuzzy_error[NS], self.fuzzy_delta_temp[2])),
-            
+
             max(self.fuzzy_error[NM],
                 min(self.fuzzy_error[NS], self.fuzzy_delta_temp[1])),
-            
+
             max(self.fuzzy_error[NL],
                 min(self.fuzzy_error[NM], self.fuzzy_delta_temp[1])),
-            
+
             min(self.fuzzy_error[NL], self.fuzzy_delta_temp[1])
         )
 
-    def deffuzify_power(self):
-        w_power = (0, 6, 20, 35, 50)     # Support member value
+    def deffuzify_power(self, room_temp):
+        correction_value = (self.set_point - room_temp) // 21
+        w_power = (0,
+                   correction_value,
+                   10 + correction_value,
+                   30 + correction_value,
+                   40 + correction_value)     # Support member value
         power = 0
         membership_sum = 0
         for i in range(5):
@@ -105,10 +115,45 @@ class FuzzyController:
         if self.power < 0:
             self.power = 0
 
-    def run_step(self, temp):
+    def calculate_accumulator(self):
+        self.fuzzy_accumulator = (
+            min(self.fuzzy_delta_temp[1], self.fuzzy_error[P]),
+
+            max(self.fuzzy_error[Z],
+                self.fuzzy_delta_temp[0],
+                self.fuzzy_delta_temp[2]),
+
+            min(self.fuzzy_delta_temp[1], self.fuzzy_error[NS])
+        )
+
+    def deffuzify_accumulator(self):
+        # Esses valores estão escalados por 100 para aumentar a resolução de
+        # forma virtual
+        w_accumulator = (-200, 0, 200)
+
+        accumulator = 0
+        membership_sum = 0
+        for i in range(3):
+            accumulator += self.fuzzy_accumulator[i] * w_accumulator[i]
+            membership_sum += self.fuzzy_accumulator[i]
+
+        accumulator //= membership_sum
+        self.accumulated_power += accumulator
+
+        if self.accumulated_power > 400:
+            self.accumulated_power = 400
+
+        if self.accumulated_power < -400:
+            self.accumulated_power = -400
+
+    def run_step(self, temp: int, room_temp: int, accumulate: bool):
         self.fuzzify_error(temp)
         self.fuzzify_delta_temp(temp)
         self.calculate_power()
-        self.deffuzify_power()
+        self.deffuzify_power(room_temp)
 
-        return self.power
+        if accumulate:
+            self.calculate_accumulator()
+            self.accumulate()
+
+        return self.power + self.accumulated_power//100
