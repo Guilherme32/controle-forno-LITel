@@ -129,7 +129,7 @@ class FuzzyController:
     def deffuzify_accumulator(self):
         # Esses valores estão escalados por 100 para aumentar a resolução de
         # forma virtual
-        w_accumulator = (-200, 0, 200)
+        w_accumulator = (-400, 0, 400)
 
         accumulator = 0
         membership_sum = 0
@@ -153,7 +153,12 @@ class FuzzyController:
         self.deffuzify_power(room_temp)
 
         if accumulate:
-            self.calculate_accumulator()
-            self.accumulate()
+            if self.accumulator_count == 0:
+                self.calculate_accumulator()
+                self.accumulate()
+            self.accumulator_count += 1
+            self.accumulator_count %= 4
+        else:
+            self.accumulator_count = 0
 
         return self.power + self.accumulated_power//100
