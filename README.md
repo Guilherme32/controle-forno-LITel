@@ -1,5 +1,6 @@
 # Controle do forno do LITel
 
+![](imgs/test_02.png)
 Esse repositório guarda o que foi desenvolvido para o controle do forno do Laboratório de Instrumentação e Telemetria da UFJF (LITel)
 
 # Informações

@@ -127,7 +127,7 @@ As variáveis de saída são transformadas em um único valor real (y), em um pr
 
 ### Entrada
 
-Para a entrada, dois valores foram analisados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quanto o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes. Ademais, a variação de temperatura é analisada ao longo do período de chamada do algoritmo de controle (30 segundos).
+Para a entrada, dois valores foram analisados: O erro e a variação da temperatura. O erro é definido como $e[n] = T[n] - T_{set}$, onde $T_{set}$ é a temperatura alvo. A variação foi pega diretamente da temperatura, e não variação do erro, para evitar uma descontinuidade quando o set point é trocado. Em qualquer momento diferente desse, as duas grandezas são equivalentes. Ademais, a variação de temperatura é analisada ao longo do período de chamada do algoritmo de controle (30 segundos).
 
 > Na verdade, para facilitar os cálculos, todo o controlador foi implementado com inteiros, logo a temperatura, variação e alvo são todos em termos da leitura no ADC, e as variáveis difusas variam entre 0 e 256, em vez de de 0 a 1. A ideia ainda é a mesma, o que muda é que essas questões devem ser levadas em conta em algumas operações.
 
@@ -138,8 +138,7 @@ Para a variação da temperatura ($\Delta T$), 3 variáveis foram definidas: N (
 ![Participação para variáveis de erro](/imgs/erro.svg "Participação para variáveis de erro")
 
 ### Regras
-Para a saída, as variáveis estabelecidas foram Z (zero), ST (estabilização), baixo (L),
-médio (M) e alto (H).
+A saída é composta de duas parcelas, uma que proporciona funções proporcional e derivativa, a principal, e outra acumuladora de erro (integradora). Para esse primeiro, as variáveis estabelecidas foram Z (zero), ST (estabilização), baixo (L), médio (M) e alto (H).
 
 - Se $e_T$ é P, Y é Z
 - Se $\Delta_T$ é P, Y é Z
@@ -165,6 +164,21 @@ médio (M) e alto (H).
 
 ---
 
+Para o integrador, as variáveis são N (negativo), Z (zero) e P (positivo). A saída das regras aplicadas é somada com a saída atual para encontrar o novo valor. O acumulador só funciona a cada 4 ciclos de controle, visto que um integrador rápido poderia inserir instabilidade no sistema.
+
+- Se $\Delta_T$ é Z e $e_T$ é P, $Y_i$ é N
+
+---
+
+- Se $e_T$ é Z, $Y_i$ é Z
+- Se $\Delta_T$ é N ou P, $Y_i$ é Z
+
+---
+
+- Se $\Delta_T$ é Z e $e_T$ é N, $Y_i$ é P
+
+---
+
 > As regras com mesma variável de saída foram combinadas com um OU
 
 ### Operações usadas
@@ -174,6 +188,10 @@ Foram consideradas as seguintes definições para os operadores:
 
 ### Saída
 
-A saída é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico:
+A saída de cada parte é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico:
 
-![Participação para variáveis de saída](/imgs/saida.svg "Participação para variáveis de saída")
+![Participação para variáveis de saída da parte principal](/imgs/saida.svg "Participação para variáveis de saída da parte principal")
+
+Para a participação de cada variável que não Z foi somado um valor de correção. A perda de calor aumenta conforme a diferença entre a temperatura do forno e externa aumenta. Esse valor ajuda a mitigar esse efeito. Ele é calculado em tempo real usando a diferença entre o set point e a temperatura ambiente.
+
+![Participação para variáveis de saída da parte integradora](/imgs/saida_i.svg "Participação para variáveis de saída da parte integradora")
