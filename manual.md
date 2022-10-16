@@ -12,6 +12,16 @@ O esp8266 possui apenas um conversor analógico - digital (adc), portanto foi ne
 
 O adc possui uma precisão de 10 bits, ou 1024 valores. Isso significa uma precisão de 1/1024 = 0.977mV. O sensor utilizado (LM35) entrega 10mV/ºC, com precisão típica entre 0.2ºC -> 2mV e 0.4ºC -> 4mV.
 
+Os sensores são:
+- S1: Central do fundo
+- S2: Lateral direito
+- S3: Lateral esquerdo
+- S4: Porta
+- S5: Principal (centro)
+- S6: Ambiente
+
+> No software, os sensores são indexados a partir de 0, não 1, logo o índice será o descrito aqui menos 1.
+
 ## Status
 
 Para visualização de alguns parâmetros diretamente na placa, três leds são utilizados:
@@ -190,8 +200,8 @@ Foram consideradas as seguintes definições para os operadores:
 
 A saída de cada parte é então calculada encontrando a centroide de cada variável de saída, com pesos relativos aos seus valores, e centros considerados nos pontos centrais das funções de participação, e somada à saída do último instante. As funções de participação das variáveis de saída podem ser vistas no gráfico:
 
-![Participação para variáveis de saída da parte principal](/imgs/saida.svg "Participação para variáveis de saída da parte principal")
+![Participação para variáveis de saída da parte principal](imgs/saida.svg "Participação para variáveis de saída da parte principal")
 
 Para a participação de cada variável que não Z foi somado um valor de correção. A perda de calor aumenta conforme a diferença entre a temperatura do forno e externa aumenta. Esse valor ajuda a mitigar esse efeito. Ele é calculado em tempo real usando a diferença entre o set point e a temperatura ambiente.
 
-![Participação para variáveis de saída da parte integradora](/imgs/saida_i.svg "Participação para variáveis de saída da parte integradora")
+![Participação para variáveis de saída da parte integradora](imgs/saida_i.svg "Participação para variáveis de saída da parte integradora")

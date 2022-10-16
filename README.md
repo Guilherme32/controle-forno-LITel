@@ -1,6 +1,8 @@
 # Controle do forno do LITel
 
 ![](imgs/test_02.png)
+Último teste realizado (14/10/2022)
+
 Esse repositório guarda o que foi desenvolvido para o controle do forno do Laboratório de Instrumentação e Telemetria da UFJF (LITel)
 
 # Informações
