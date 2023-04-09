@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     get_ap_info();
     setTimeout(() => get_sta_info(true), 500)   // Esperando pra n sobrecarregar o servidor
 
-    setTimeout(() => setInterval(get_sta_info, 1000), 10000)
+    setTimeout(() => setInterval(get_sta_info, 10000), 10000)
 });
 
 
@@ -39,16 +39,17 @@ function get_sta_info(get_ssid=false){
             document.querySelector("#sta_password").value = result["password"];
         }
 
-        const ip_value = result["connected"] ? result["ip"] : "<span class='error'>Desconectado</span>";
+        document.querySelector("#sta_submit").innerHTML = "Enviar";
+        const ip_value = result["ip"].length > 1 ? result["ip"] : "<span class='error'>Desconectado</span>";
         document.querySelector("#sta_ip").innerHTML = ip_value;
     }).catch(reason =>{
-        console.log("Falhou na busca das informações de sta.")
-        console.log(reason)
+        console.log("Falhou na busca das informações de sta.");
+        console.log(reason);
 
         const ip_value = "<span class='error'>Desconectado</span>";
         document.querySelector("#sta_ip").innerHTML = ip_value;
 
-        document.querySelector("#sta_submit").innerHTML = "<span class='error'>Servidor Inalcançável</span>"
+        document.querySelector("#sta_submit").innerHTML = "<span class='error'>Servidor Inalcançável</span>";
     });
 }
 
