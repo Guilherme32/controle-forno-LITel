@@ -1,3 +1,4 @@
+#include "esp_system.h"
 
 
 int run_fuzzy_step(int sensor_reading, int ambient_reading, bool accumulate);

@@ -35,7 +35,7 @@ static int fuzzy_error[5];             // NL, NM, NS, Z, P
 static int fuzzy_power[5];             // Z, ST, L, M, H
 static int power;
 
-static int fuzzy_acummulator[3];       // N, Z, P
+static int fuzzy_accumulator[3];       // N, Z, P
 static int accumulator_count;
 static int accumulated_power;
 
@@ -45,6 +45,8 @@ static int accumulated_power;
 static int fuzzify_triangular(int value, int center, int half_width, int edge);
 static int min(int value1, int value2);
 static int max(int value1, int value2);
+static int max3(int value1, int value2, int value3);
+static int abs(int value);
 static void fuzzify_delta_temp(int sensor_reading);
 static void fuzzify_error(int sensor_reading);
 static void calculate_power();
@@ -84,53 +86,123 @@ static int max(int value1, int value2)
     return value1 > value2 ? value1 : value2;
 }
 
+static int max3(int value1, int value2, int value3)
+{
+    int _max = value1 > value2 ? value1 : value2;
+    _max = value3 > _max ? value3 : _max;
+
+    return _max;
+}
+
+static int abs(int value)
+{
+    return value > 0 ? value : -value;
+}
+
 static void fuzzify_delta_temp(int sensor_reading)
 {
     int delta_temp = sensor_reading - last_read;
     last_read = sensor_reading;
 
-    fuzzy_delta_temp = {
-        fuzzify_triangular(delta_temp, -15, 15, -1),
-        fuzzify_triangular(delta_temp, 0,   15, 0 ),
-        fuzzify_triangular(delta_temp, 15,  15, 1 )
-    };
+    fuzzy_delta_temp[0] = fuzzify_triangular(delta_temp, -15, 15, -1);
+    fuzzy_delta_temp[1] = fuzzify_triangular(delta_temp, 0,   15, 0 ),
+    fuzzy_delta_temp[2] = fuzzify_triangular(delta_temp, 15,  15, 1 );
 }
 
 static void fuzzify_error(int sensor_reading)
 {
-    int error = temp - set_point;
+    int error = sensor_reading - set_point;
 
-    fuzzy_error = {
-        fuzzify_triangular(error, -150, 50, -1),
-        fuzzify_triangular(error, -100, 50,  0),
-        fuzzify_triangular(error, -50,  50,  0),
-        fuzzify_triangular(error,  0,   50,  0),
-        fuzzify_triangular(error,  50,  50,  1)
-    };
+    fuzzy_error[0] = fuzzify_triangular(error, -150, 50, -1);
+    fuzzy_error[1] = fuzzify_triangular(error, -100, 50,  0);
+    fuzzy_error[2] = fuzzify_triangular(error, -50,  50,  0);
+    fuzzy_error[3] = fuzzify_triangular(error,  0,   50,  0);
+    fuzzy_error[4] = fuzzify_triangular(error,  50,  50,  1);
 }
 
 static void calculate_power()
 {
-    fuzzy_power = {
-        max(fuzzy_error[E_P],
-            fuzzy_delta_temp[DT_P]),
+    fuzzy_power[0] = max(fuzzy_error[E_P],
+                         fuzzy_delta_temp[DT_P]);
 
-        max(fuzzy_error[E_Z],
-            min(fuzzy_error[E_NS], fuzzy_delta_temp[DT_P])),
+    fuzzy_power[1] = max(fuzzy_error[E_Z],
+                         min(fuzzy_error[E_NS], fuzzy_delta_temp[DT_P]));
 
-        max(fuzzy_error[E_NM],
-            min(fuzzy_error[E_NS], fuzzy_delta_temp[DT_Z])),
+    fuzzy_power[2] = max(fuzzy_error[E_NM],
+                         min(fuzzy_error[E_NS], fuzzy_delta_temp[DT_Z]));
 
-        max(fuzzy_error[E_NL],
-            min(fuzzy_error[E_NM], fuzzy_delta_temp[DT_Z])),
+    fuzzy_power[3] = max(fuzzy_error[E_NL],
+                         min(fuzzy_error[E_NM], fuzzy_delta_temp[DT_Z]));
 
-        min(fuzzy_error[E_NL], fuzzy_delta_temp[DT_Z])
-    };
+    fuzzy_power[4] = min(fuzzy_error[E_NL], fuzzy_delta_temp[DT_Z]);
 }
 
-static void defuzzify_power(int ambient_reading);
-static void calculate_accumulator();
-static void defuzzify_accumulator();
+static void defuzzify_power(int ambient_reading)
+{
+    int correction_value = (set_point - ambient_reading) / 21;
+
+    int w_power[5] = {
+        0,
+        correction_value,
+        10 + correction_value,
+        30 + correction_value,
+        40 + correction_value,
+    };
+
+    int _power = 0;
+    int membership_sum = 0;
+
+    for (int i=0; i<5; i++) {
+        _power += fuzzy_power[i] * w_power[i];
+        membership_sum += fuzzy_power[i];
+    }
+
+    _power /= membership_sum;
+    power = _power;
+
+    if (power > max_power) {
+        power = max_power;
+    }
+    if (power < 0) {
+        power = 0;
+    }
+}
+
+static void calculate_accumulator()
+{
+    fuzzy_accumulator[0] = min(fuzzy_delta_temp[DT_Z], fuzzy_error[E_P]);
+
+    fuzzy_accumulator[1] = max3(fuzzy_error[E_Z],
+                               fuzzy_delta_temp[DT_N],
+                               fuzzy_delta_temp[DT_P]);
+
+    fuzzy_accumulator[2] = min(fuzzy_delta_temp[DT_Z], fuzzy_error[E_NS]);
+}
+
+static void defuzzify_accumulator()
+{
+    // The values are scaled by a factor of a 100 to virtually increase resolution
+
+    int w_accumulator[3] = {-400, 0, 400};
+
+    int accumulator = 0;
+    int membership_sum = 0;
+
+    for (int i=0; i<3; i++) {
+        accumulator += fuzzy_accumulator[i] * w_accumulator[i];
+        membership_sum += fuzzy_accumulator[i];
+    }
+
+    accumulator /= membership_sum;
+    accumulated_power += accumulator;
+
+    if (accumulated_power > 400) {
+        accumulated_power = 400;
+    }
+    if (accumulated_power < -400) {
+        accumulated_power = -400;
+    }
+}
 
 
 // Public functions definition --------------------------------------------------------------------
@@ -167,12 +239,28 @@ void fuzzy_init(int _last_read, int _max_power)
     last_read = _last_read;
     max_power = _max_power;
 
-    fuzzy_delta_temp = {0, 0, 0};
-    fuzzy_error = {0, 0, 0, 0, 0};
-    fuzzy_power = {0, 0, 0, 0, 0};
+    fuzzy_delta_temp[0] = 0;
+    fuzzy_delta_temp[1] = 0;
+    fuzzy_delta_temp[2] = 0;
+
+    fuzzy_error[0] = 0;
+    fuzzy_error[1] = 0;
+    fuzzy_error[2] = 0;
+    fuzzy_error[3] = 0;
+    fuzzy_error[4] = 0;
+
+    fuzzy_power[0] = 0;
+    fuzzy_power[1] = 0;
+    fuzzy_power[2] = 0;
+    fuzzy_power[3] = 0;
+    fuzzy_power[4] = 0;
+
     power = 0;
 
-    fuzzy_acummulator = {0, 0, 0};
+    fuzzy_accumulator[0] = 0;
+    fuzzy_accumulator[1] = 0;
+    fuzzy_accumulator[2] = 0;
+
     accumulator_count = 0;
     accumulated_power = 0;
 }
