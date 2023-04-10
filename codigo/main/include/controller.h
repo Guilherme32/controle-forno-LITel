@@ -5,6 +5,8 @@
 #include "driver/gpio.h"
 #include "esp_timer.h"
 
+#include "fuzzy_controller.h"
+
 
 #ifndef CONTROLLER_IMPORT
 typedef struct ControllerInfo {

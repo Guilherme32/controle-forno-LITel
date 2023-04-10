@@ -48,16 +48,16 @@ static void IRAM_ATTR check_steady_state();
 static void IRAM_ATTR set_pins();
 static void check_counter_limits();
 
-int run_fuzzy_step(int sensor_reading,
-                   int ambient_reading,
-                   bool accumulate)    // TODO mover para fuzzy e pega o header aq
-{
-    return 1;
-}
+// int run_fuzzy_step(int sensor_reading,
+//                    int ambient_reading,
+//                    bool accumulate)    // TODO mover para fuzzy e pega o header aq
+// {
+//     return 1;
+// }
 
-void set_fuzzy_target(int _target) {        // Tb zerar o acumulador nessa funcao
-    return;
-}
+// void set_fuzzy_target(int _target) {        // Tb zerar o acumulador nessa funcao
+//     return;
+// }
 
 
 // Static functions -------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ void controller_init(int (*_read_sensor)(), int (*_read_ambient)())
     intr_cfg.pull_down_en = 0;
     gpio_config(&intr_cfg);
 
-    ESP_LOGI(CONTROLLER_TAG, "Initiated the controller");
+    fuzzy_init(last_sensor_read, PERIOD);
 
-    // TODO init the fuzzy controller
+    ESP_LOGI(CONTROLLER_TAG, "Initiated the controller");
 }
