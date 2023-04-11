@@ -4,11 +4,17 @@ import pandas as pd
 import os
 
 
+def read_to_temp(reading: int) -> float:
+    voltage = (reading * 2) / 1023
+    temp = voltage / 0.01
+    return temp
+
+
 step_values = list(range(60, 141, 20))
 step_values = [120, ]
 step_time = 25 * 60
 sample_time = 1
-ip_addr = "10.15.75.42"
+ip_addr = "192.168.0.101"
 
 init_time = time()
 total_time = step_time * len(step_values)
@@ -41,7 +47,7 @@ for i, value in enumerate(step_values):
             resp = resp.json()
             set_point = resp["set_point"]
             power = resp["power_ratio"]
-            resp = {f"S{x+1}": y for x, y in enumerate(resp["temperatures"])}
+            resp = {f"S{x+1}": read_to_temp(y) for x, y in enumerate(resp["readings"])}
             resp["set_point"] = set_point
             resp["power"] = power
             resp["time"] = this_time
