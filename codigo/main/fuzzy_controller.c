@@ -42,22 +42,22 @@ static int accumulated_power;
 
 // Static functions declaration -------------------------------------------------------------------
 
-static int fuzzify_triangular(int value, int center, int half_width, int edge);
-static int min(int value1, int value2);
-static int max(int value1, int value2);
-static int max3(int value1, int value2, int value3);
-static int abs(int value);
-static void fuzzify_delta_temp(int sensor_reading);
-static void fuzzify_error(int sensor_reading);
-static void calculate_power();
-static void defuzzify_power(int ambient_reading);
-static void calculate_accumulator();
-static void defuzzify_accumulator();
+static int IRAM_ATTR fuzzify_triangular(int value, int center, int half_width, int edge);
+static int IRAM_ATTR min(int value1, int value2);
+static int IRAM_ATTR max(int value1, int value2);
+static int IRAM_ATTR max3(int value1, int value2, int value3);
+static int IRAM_ATTR abs(int value);
+static void IRAM_ATTR fuzzify_delta_temp(int sensor_reading);
+static void IRAM_ATTR fuzzify_error(int sensor_reading);
+static void IRAM_ATTR calculate_power();
+static void IRAM_ATTR defuzzify_power(int ambient_reading);
+static void IRAM_ATTR calculate_accumulator();
+static void IRAM_ATTR defuzzify_accumulator();
 
 
 // Static functions definition --------------------------------------------------------------------
 
-static int fuzzify_triangular(int value, int center, int half_width, int edge)
+static int IRAM_ATTR fuzzify_triangular(int value, int center, int half_width, int edge)
 {
     if (edge == -1 && value < center) {
         return 256;
@@ -76,17 +76,17 @@ static int fuzzify_triangular(int value, int center, int half_width, int edge)
     return (256 * (half_width - centered_value)) / half_width;
 }
 
-static int min(int value1, int value2)
+static int IRAM_ATTR min(int value1, int value2)
 {
     return value1 < value2 ? value1 : value2;
 }
 
-static int max(int value1, int value2)
+static int IRAM_ATTR max(int value1, int value2)
 {
     return value1 > value2 ? value1 : value2;
 }
 
-static int max3(int value1, int value2, int value3)
+static int IRAM_ATTR max3(int value1, int value2, int value3)
 {
     int _max = value1 > value2 ? value1 : value2;
     _max = value3 > _max ? value3 : _max;
@@ -94,12 +94,12 @@ static int max3(int value1, int value2, int value3)
     return _max;
 }
 
-static int abs(int value)
+static int IRAM_ATTR abs(int value)
 {
     return value > 0 ? value : -value;
 }
 
-static void fuzzify_delta_temp(int sensor_reading)
+static void IRAM_ATTR fuzzify_delta_temp(int sensor_reading)
 {
     int delta_temp = sensor_reading - last_read;
     last_read = sensor_reading;
@@ -109,7 +109,7 @@ static void fuzzify_delta_temp(int sensor_reading)
     fuzzy_delta_temp[2] = fuzzify_triangular(delta_temp, 15,  15, 1 );
 }
 
-static void fuzzify_error(int sensor_reading)
+static void IRAM_ATTR fuzzify_error(int sensor_reading)
 {
     int error = sensor_reading - set_point;
 
@@ -120,7 +120,7 @@ static void fuzzify_error(int sensor_reading)
     fuzzy_error[4] = fuzzify_triangular(error,  50,  50,  1);
 }
 
-static void calculate_power()
+static void IRAM_ATTR calculate_power()
 {
     fuzzy_power[0] = max(fuzzy_error[E_P],
                          fuzzy_delta_temp[DT_P]);
@@ -137,7 +137,7 @@ static void calculate_power()
     fuzzy_power[4] = min(fuzzy_error[E_NL], fuzzy_delta_temp[DT_Z]);
 }
 
-static void defuzzify_power(int ambient_reading)
+static void IRAM_ATTR defuzzify_power(int ambient_reading)
 {
     int correction_value = (set_point - ambient_reading) / 21;
 
@@ -168,7 +168,7 @@ static void defuzzify_power(int ambient_reading)
     }
 }
 
-static void calculate_accumulator()
+static void IRAM_ATTR calculate_accumulator()
 {
     fuzzy_accumulator[0] = min(fuzzy_delta_temp[DT_Z], fuzzy_error[E_P]);
 
@@ -179,7 +179,7 @@ static void calculate_accumulator()
     fuzzy_accumulator[2] = min(fuzzy_delta_temp[DT_Z], fuzzy_error[E_NS]);
 }
 
-static void defuzzify_accumulator()
+static void IRAM_ATTR defuzzify_accumulator()
 {
     // The values are scaled by a factor of a 100 to virtually increase resolution
 
@@ -207,7 +207,7 @@ static void defuzzify_accumulator()
 
 // Public functions definition --------------------------------------------------------------------
 
-int run_fuzzy_step(int sensor_reading, int ambient_reading, bool accumulate)
+int IRAM_ATTR run_fuzzy_step(int sensor_reading, int ambient_reading, bool accumulate)
 {
     fuzzify_error(sensor_reading);
     fuzzify_delta_temp(sensor_reading);
