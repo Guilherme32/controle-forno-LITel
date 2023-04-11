@@ -180,8 +180,6 @@ void sensor_init()
 
 void sensors_task()
 {
-    sensor_init();
-
     while (1) {
         read_temperatures();
         vTaskDelay(READ_PERIOD / portTICK_PERIOD_MS);

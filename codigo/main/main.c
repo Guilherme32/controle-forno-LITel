@@ -45,7 +45,8 @@ void app_main()
     add_command(reading_command, reading_command_help);
     add_command(temperature_command, temperature_command_help);
 
-    // Starting modules tasks -------------------------------------------------
-    xTaskCreate(wifi_led_task, "wifi_led", configMINIMAL_STACK_SIZE, NULL, 10, NULL);
-    xTaskCreate(serial_comm_task, "serial", 2*configMINIMAL_STACK_SIZE, NULL, 10, NULL);
+    // Starting modules tasks ---------------------------------------------------------------------
+    xTaskCreate(sensors_task, "sensor_task", configMINIMAL_STACK_SIZE, NULL, 10, NULL);
+    xTaskCreate(wifi_led_task, "wifi_led_task", configMINIMAL_STACK_SIZE, NULL, 10, NULL);
+    xTaskCreate(serial_comm_task, "serial_task", 2*configMINIMAL_STACK_SIZE, NULL, 10, NULL);
 }
