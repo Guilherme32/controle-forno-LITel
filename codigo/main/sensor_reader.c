@@ -42,7 +42,7 @@ static void set_control_pins(int value)
 {
     gpio_set_level(CONTROL_PIN_0, (value >> 0) % 2);
     gpio_set_level(CONTROL_PIN_1, (value >> 1) % 2);
-    gpio_set_level(CONTROL_PIN_0, (value >> 2) % 2);
+    gpio_set_level(CONTROL_PIN_2, (value >> 2) % 2);
 }
 
 static void read_temperatures()
