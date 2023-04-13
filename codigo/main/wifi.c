@@ -238,8 +238,6 @@ void wifi_init()
     ESP_LOGI(WIFI_TAG, "WiFi access point initialized. SSID:%s password:%s",
              AP_SSID, AP_PASSWORD);
 
-    update_config(STA_SSID, STA_PASSWORD);
-
     gpio_config_t gpio_cfg;                        // Init the status pin
     gpio_cfg.intr_type = GPIO_INTR_DISABLE;
     gpio_cfg.mode = GPIO_MODE_OUTPUT;

@@ -47,6 +47,6 @@ void app_main()
 
     // Starting modules tasks ---------------------------------------------------------------------
     xTaskCreate(sensors_task, "sensor_task", configMINIMAL_STACK_SIZE, NULL, 10, NULL);
-    xTaskCreate(wifi_led_task, "wifi_led_task", configMINIMAL_STACK_SIZE, NULL, 10, NULL);
+    xTaskCreate(wifi_led_task, "wifi_led_task", 2*configMINIMAL_STACK_SIZE, NULL, 10, NULL);
     xTaskCreate(serial_comm_task, "serial_task", 2*configMINIMAL_STACK_SIZE, NULL, 10, NULL);
 }

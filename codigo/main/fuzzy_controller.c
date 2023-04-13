@@ -157,7 +157,9 @@ static void IRAM_ATTR defuzzify_power(int ambient_reading)
         membership_sum += fuzzy_power[i];
     }
 
-    _power /= membership_sum;
+    if (membership_sum != 0) {
+        _power /= membership_sum;
+    }
     power = _power;
 
     if (power > max_power) {
@@ -193,7 +195,10 @@ static void IRAM_ATTR defuzzify_accumulator()
         membership_sum += fuzzy_accumulator[i];
     }
 
-    accumulator /= membership_sum;
+    if (membership_sum != 0) {
+        accumulator /= membership_sum;
+    }
+
     accumulated_power += accumulator;
 
     if (accumulated_power > 400) {
