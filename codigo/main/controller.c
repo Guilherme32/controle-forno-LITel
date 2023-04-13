@@ -48,17 +48,6 @@ static void IRAM_ATTR check_steady_state();
 static void IRAM_ATTR set_pins();
 static void check_counter_limits();
 
-// int run_fuzzy_step(int sensor_reading,
-//                    int ambient_reading,
-//                    bool accumulate)    // TODO mover para fuzzy e pega o header aq
-// {
-//     return 1;
-// }
-
-// void set_fuzzy_target(int _target) {        // Tb zerar o acumulador nessa funcao
-//     return;
-// }
-
 
 // Static functions -------------------------------------------------------------------------------
 

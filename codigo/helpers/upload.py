@@ -1,10 +1,11 @@
 import requests
 import os
 import gzip
+import sys
 
 
-upload_ip_addr = "http://192.168.0.101/upload_file"
-get_ip_addr = "http://192.168.0.101/"
+get_ip_addr = "http://192.168.0.103/"
+upload_ip_addr = get_ip_addr + "upload_file"
 web_path = "../web_code/"
 
 
@@ -39,7 +40,13 @@ def check_file(filename):
     return ok
 
 
-def main():
+def main(ip_addr):
+    global get_ip_addr
+    global upload_ip_addr
+
+    get_ip_addr = "http://" + ip_addr + "/"
+    upload_ip_addr = get_ip_addr + "upload_file"
+
     for filename in os.listdir("../web_code/"):
         file_ok = False
         attempts = 0
@@ -61,4 +68,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: upload.py <esp_ip_addr>")
+    else:
+        main(sys.argv[1])

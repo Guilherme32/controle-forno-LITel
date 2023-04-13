@@ -20,8 +20,13 @@
 #include "controller.h"
 #include "serial_comm.h"
 
-int readings_placeholder() {        // TODO placeholder
-    return 0;
+
+int main_sensor_reading() {
+    return get_reading(4);
+}
+
+int ambient_sensor_reading() {
+    return get_reading(5);
 }
 
 void app_main()
@@ -35,7 +40,7 @@ void app_main()
     wifi_init();
     spiffs_init();
     server_init(10);
-    controller_init(readings_placeholder, readings_placeholder);
+    controller_init(main_sensor_reading, ambient_sensor_reading);
     serial_comm_init();
 
     // Linking modules ----------------------------------------------------------------------------

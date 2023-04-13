@@ -201,11 +201,11 @@ static void IRAM_ATTR defuzzify_accumulator()
 
     accumulated_power += accumulator;
 
-    if (accumulated_power > 400) {
-        accumulated_power = 400;
+    if (accumulated_power > 800) {
+        accumulated_power = 800;
     }
-    if (accumulated_power < -400) {
-        accumulated_power = -400;
+    if (accumulated_power < -800) {
+        accumulated_power = -800;
     }
 }
 
