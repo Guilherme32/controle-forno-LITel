@@ -85,7 +85,7 @@ input.button{
 
 #graph_container{
     width: 100%;
-    height: calc(100vh - 20px) !important;
+    height: calc(100vh - 200px) !important;
     background-color: white;
     border: 2px solid gray;
 }
@@ -101,6 +101,7 @@ input.button{
 .container{
     display: flex;
     justify-content: space-between;
+    height: 180px;
 }
 
 .table{
