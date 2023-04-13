@@ -100,15 +100,12 @@ bool update_config(char* ssid, char* password)
         sta_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
     }
 
-    esp_wifi_stop();
-
     esp_err_t err = esp_wifi_set_config(ESP_IF_WIFI_STA, &sta_config);
     if (err != ESP_OK) {
         ESP_LOGE(WIFI_TAG, "Failed to set sta config (%s)", esp_err_to_name(err));
         return false;
     }
 
-    esp_wifi_start();
     connect_sta();
 
     return true;
@@ -234,6 +231,7 @@ void wifi_init()
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
+    // update_config(STA_SSID, STA_PASSWORD);        // Useful for the first time
 
     ESP_LOGI(WIFI_TAG, "WiFi access point initialized. SSID:%s password:%s",
              AP_SSID, AP_PASSWORD);

@@ -1,7 +1,7 @@
 #include "storage_spiffs.h"
 
 #define SPIFFS_TAG "SPIFFS"
-#define TEST_SPIFFS 1
+#define TEST_SPIFFS 0
 
 
 void spiffs_test(void)

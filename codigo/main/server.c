@@ -525,6 +525,8 @@ httpd_uri_t uri_send_set_point = {
 
 httpd_handle_t server_init(int task_prio)
 {
+    ESP_LOGI(SERVER_TAG, "Initiating server...");
+
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.task_priority = task_prio;
     config.max_uri_handlers = 20;
@@ -553,5 +555,6 @@ httpd_handle_t server_init(int task_prio)
         httpd_register_uri_handler(server, &uri_send_set_point);
     }
 
+    ESP_LOGI(SERVER_TAG, "Server Initiated");
     return server;
 }

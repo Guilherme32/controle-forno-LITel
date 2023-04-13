@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const init_time = Date.now();
     var chart = start_chart(plot_data);
 
+    update_interface(init_time, plot_data, chart);
     setInterval(() => {update_interface(init_time, plot_data, chart)}, 5000);
 
     // Buf Fix. O grafico não atualizava o tamanho. Isso corrige
