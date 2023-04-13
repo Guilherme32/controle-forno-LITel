@@ -29,15 +29,17 @@ def reading_to_temp(reading: int) -> float:
 # -----------------------------------------------------------------------------
 
 
-readings = np.array(range(0, round(1024*0.75)))
-temps = np.array([reading_to_temp(reading) for reading in readings])
+# readings = np.array(range(0, round(1024*0.75)))
+# temps = np.array([reading_to_temp(reading) for reading in readings])
 
-plt.plot(readings, temps)
-plt.show()
+# plt.plot(readings, temps)
+# plt.show()
 
 
 # -----------------------------------------------------------------------------
 
+
+plt.figure(figsize=(8, 5))
 
 readings = np.array(range(-30, 30))
 temps = np.array([reading_to_temp(reading) for reading in readings])
@@ -67,7 +69,7 @@ plt.savefig("deltaT.svg", facecolor="white")
 # -----------------------------------------------------------------------------
 
 
-plt.figure()
+plt.figure(figsize=(8, 5))
 readings = np.array(range(-175, 75))
 temps = np.array([reading_to_temp(reading) for reading in readings])
 
@@ -98,7 +100,7 @@ plt.savefig("erro.svg", facecolor="white")
 # -----------------------------------------------------------------------------
 
 
-plt.figure()
+plt.figure(figsize=(8, 5))
 delta_temp_vars = {"ST": 0,
                    "L": 10,
                    "M": 30,
@@ -131,7 +133,7 @@ plt.savefig("saida.svg", facecolor="white")
 # -----------------------------------------------------------------------------
 
 
-plt.figure()
+plt.figure(figsize=(8, 5))
 delta_temp_vars = {"N": -4,
                    "Z": 0,
                    "P": 4,}
