@@ -89,7 +89,8 @@ A página possui alguns componentes:
 - Operação: 
     O forno pode funcionar por potência fixa ou por set point. Uma vez que
     o modo é selecionado, e o valor desejado inserido na caixa de texto, o botão
-    enviar pode ser pressionado para enviar as informações para o microcontrolador.
+    enviar pode ser pressionado para enviar as informações para o
+    microcontrolador.
 
 - Informações instantâneas:
     Para melhor entendimento, algumas informações são colocadas referentes ao
@@ -102,10 +103,10 @@ A página possui alguns componentes:
     Um gráfico temporal com os valores de set point (se estiver no modo de
     controle) e os valores lidos por todos os sensores. Cada conjunto pode ser
     apagado ou redesenhado para maior clareza. Também, vale notar que o gráfico
-    somente mostra as últimas 600 amostras.
+    somente mostra as últimas 240 amostras.
 
-> O gráfico e as informações instantâneas são atualizados com 1 segundo. Dessa
-forma, o gráfico mostraria amostras dos últimos 10 minutos.
+> O gráfico e as informações instantâneas são atualizados com 5 segundos. Dessa
+forma, o gráfico mostra amostras dos últimos 20 minutos.
 
 
 # Comunicação Serial
