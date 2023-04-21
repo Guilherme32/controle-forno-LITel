@@ -23,5 +23,11 @@
 #include "sensor_reader.h"
 #include "controller.h"
 
+/**
+* Inicializa o servidor. Eh o unico sistema que cria a task na inicializacao,
+* porque a task do servidor eh criada internamente 
+* @param task_prio Prioridade da task do servidor
+* @return O handle do servidor
+*/
 httpd_handle_t server_init(int task_prio);
 

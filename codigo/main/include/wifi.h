@@ -28,10 +28,51 @@ typedef struct NetInfo {
 
 #endif
 
+
+/**
+* Atualiza as configuracoes do modo station do wifi. Essas sao as credenciais
+* com as quais o esp tentara se conectar a rede externa
+* @param ssid O SSID da rede externa
+* @param password A senha da rede externa
+*/
 bool update_config(char* ssid, char* password);
+
+/**
+* Busca as informacoes do modo station
+* @return O struct preenchido com as informacoes do modo station
+*/
 NetInfo sta_info();
+
+/**
+* Busca as informacoes do modo acess point
+* @return O struct preenchido com as informacoes do modo acess point
+*/
 NetInfo ap_info();
+
+/**
+* O comando que printa (envia a serial) as informacoes de rede. Printa o IP 
+* (caso conectado para o station, sempre para o access point), o ssid e a senha
+* para ambas as interfaces (station e access point).
+* @param command A string com o texto a ser avaliado como comando. Sera aceito
+*                para "netinfo"
+* @return true se o comando for aceito, false caso contrario
+*/
 bool netinfo_command(char* message);
+
+/**
+* Printa (envia por serial) a ajuda para o comando netinfo_command.
+* @param prefix O prefixo utilizado para os comandos
+*/
 void netinfo_command_help(char prefix);
+
+/**
+* A task responsavel por controlar o led. Led ligado significa station
+* conectado. Led piscando significa tentando conectar. Desligado significa
+* que nao conseguiu se conectar
+*/
 void wifi_led_task();
+
+/**
+* Inicializa o WiFi
+*/
 void wifi_init();

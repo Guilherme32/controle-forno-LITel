@@ -7,4 +7,7 @@
 #include "esp_spiffs.h"
 
 
-void spiffs_init(void);
+/**
+* Inicializa (faz o mount) o sistema de arquivos do esp.
+*/
+void spiffs_init();
