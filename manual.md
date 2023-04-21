@@ -200,9 +200,9 @@ X = 3, Y = 2
 ## fuzzy_controller
 
 Essa parte é a que de fato implementa o sistema de controle. Ela implementa,
-como o nome sugere, um controlador de lógica difusa (Fuzzy Logic Controller
-- FLC). O controlador foi baseado no de primeira ordem utilizado no trabalho
-original de controle do forno
+como o nome sugere, um controlador de lógica difusa (Fuzzy Logic
+Controller - FLC). O controlador foi baseado no de primeira ordem utilizado no
+trabalho original de controle do forno
 ([TCC de Leonardo Serapião](https://www.ufjf.br/mecanica/files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-Ara%c3%bajo-Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)).
 Controladores difusos possuem bom desempenho para controle de sistemas não
 lineares, e com possíveis perturbações externas, que é exatamente a situação do
