@@ -28,9 +28,20 @@ static char sta_ip[20] = "";
 
 // Static functions declaration -------------------------------------------------------------------
 
+/**
+* O handler de eventos wifi. So esta sendo usado para tratar os eventos do modo
+* station. Caso tenha sido iniciado, tenta conectar.
+           Caso tenha falhado a conexao, tenta conectar novamente, com um
+               limite de tentativas.
+           Caso tenha se conectado e recebido o IP corretamente, faz o log disso
+*/
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data);
+
+/** Reseta a quantidade de tentativas e manda tentar novamente conectar o modo station. */
 static void connect_sta();
+
+/** Transforma as informacoes de um struct de informacoes em um texto legivel. */
 static char* info_str(NetInfo info);
 
 

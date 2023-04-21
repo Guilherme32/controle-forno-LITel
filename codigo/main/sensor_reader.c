@@ -23,10 +23,25 @@ int readings[8] = {0};
 
 // Static functions declaration -------------------------------------------------------------------
 
+/** Transforma uma leitura do sensor em uma temperatura inteira (truncada). */
 static int reading_to_temp(int reading);
+
+/**
+* Coloca nos pinos de controle o valor adequado. Isso eh feito para acessar os
+* sensores com o multiplexador analogico utilizado no circuito
+*/
 static void set_control_pins(int value);
+
+/** Realiza a leitura de todos os sensores e as armazena na variavel global. */
 static void read_temperatures();
+
+/**
+* Testa a velocidade de execucao das leituras. Realiza uma serie de leituras.
+* Realiza uma longa sequencia de leituras e envia pela serial o tempo de
+* execucao.
+*/
 static void test_speed();
+
 
 
 // Static functions definition --------------------------------------------------------------------

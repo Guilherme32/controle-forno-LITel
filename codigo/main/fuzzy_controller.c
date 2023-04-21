@@ -42,16 +42,60 @@ static int accumulated_power;
 
 // Static functions declaration -------------------------------------------------------------------
 
+/**
+* Faz a fuzzificacao de uma variavel, considerando uma funcao triangular.
+* @param value O valor a ser fuzzificado
+* @param center O centro do triangulo de fuzzificacao
+* @param half_width A largura de uma banda do triangulo, na dimensao de value
+* @param edge O tipo da funcao.
+*             Para edge = -1, O triangulo sera clipado a esquerda ( --\__ );
+*             Para edge = 0, sera um triangulo sem ser clipado ( __/\__ );
+*             Para edge = 1, sera um triangulo clipado a direita ( __/--).
+* @return O valor fuzzificado. Sera entre 0 e 255, para que o sistema trabalhe
+*         com valores inteiros.
+*/
 static int IRAM_ATTR fuzzify_triangular(int value, int center, int half_width, int edge);
+
+/** Retorna o minimo entre dois valores. */
 static int IRAM_ATTR min(int value1, int value2);
+
+/** Retorna o maximo entre dois valores. */
 static int IRAM_ATTR max(int value1, int value2);
+
+/** Retorna o maximo entre tres valores. */
 static int IRAM_ATTR max3(int value1, int value2, int value3);
+
+/** Retorna o modulo de um valor. */
 static int IRAM_ATTR abs(int value);
+
+/**
+* Calcula o fuzzy dT (delta temp) a partir da leitura do sensor. A ultima
+leitura eh armazenada internamente.
+*/
 static void IRAM_ATTR fuzzify_delta_temp(int sensor_reading);
+
+/**
+* Calcula o fuzzy e (error) a partir da leitura do sensor. O set point eh
+* Armazenado intermante.
+*/
 static void IRAM_ATTR fuzzify_error(int sensor_reading);
+
+/** Calcula o fuzzy P (power) a partir das variaveis fuzzificadas anteriormente. */
 static void IRAM_ATTR calculate_power();
+
+/**
+* Transforma o fuzzy p (power) em uma relacao de potencia utilizavel pelo
+modulador de potencia.
+*/
 static void IRAM_ATTR defuzzify_power(int ambient_reading);
+
+/** Calcula o fuzzy accumulator a partir das variaveis fuzzificadas anteriormente. */
 static void IRAM_ATTR calculate_accumulator();
+
+/** 
+* Transforma o fuzzy accumulator em um valor utilizavel pelo modulador de
+* potencia e o soma a parcela acumuladora da saida.
+*/
 static void IRAM_ATTR defuzzify_accumulator();
 
 

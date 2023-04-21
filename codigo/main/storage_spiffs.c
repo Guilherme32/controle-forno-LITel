@@ -4,7 +4,15 @@
 #define TEST_SPIFFS 0
 
 
-void spiffs_test(void)
+// static functions declaration -------------------------------------------------------------------
+
+/** Testa o sistema. Cria um arquivo, escreve um texto, renomeia e entao o le novamente. */
+static void spiffs_test();
+
+
+// static functions definition --------------------------------------------------------------------
+
+static void spiffs_test()
 {
     // Use POSIX and C standard library functions to work with files.
     // First create a file.
@@ -52,7 +60,10 @@ void spiffs_test(void)
     ESP_LOGI(SPIFFS_TAG, "Finished SPIFFS test sequence");
 }
 
-void spiffs_init(void)
+
+// Public functions definition --------------------------------------------------------------------
+
+void spiffs_init()
 {
     ESP_LOGI(SPIFFS_TAG, "Initializing SPIFFS filesystem");
 

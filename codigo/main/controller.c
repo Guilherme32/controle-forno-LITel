@@ -42,14 +42,37 @@ int (*read_ambient)();
 
 // Static functions declaration -------------------------------------------------------------------
 
+/** Atualiza a relacao de ligado/deligado (taxa de potencia) */
 static void IRAM_ATTR update_ratio();
+
+/** Funcao inicializada no cruzamento com o zero. Decide se o semiciclo sera ligado ou desligado */
 static void IRAM_ATTR send_power();
+
+/** Confere se o sistema alcancou o regime estacionario */
 static void IRAM_ATTR check_steady_state();
-static void IRAM_ATTR set_pins();
+
+/** Coloca nos terminais que controla o driver da carga o nivel logico passado.  */
+static void IRAM_ATTR set_pins(int level);
+
+/** Confere se o contador de potencia (utilizado na modulacao) esta dentro dos limites. */
 static void check_counter_limits();
 
 
 // Static functions -------------------------------------------------------------------------------
+
+static void IRAM_ATTR update_ratio()
+{
+    if (control) {
+        int accumulate = steady && (abs(read_sensor() - target) > STEADY_LIMIT);
+        unsigned int power = run_fuzzy_step(
+            read_sensor(),
+            read_ambient(),
+            accumulate);
+
+        power_ratio[0] = power;
+        power_ratio[1] = PERIOD - power;
+    }
+}
 
 static void IRAM_ATTR send_power()
 {
@@ -79,20 +102,6 @@ static void IRAM_ATTR send_power()
     }
 
     cycles ++;
-}
-
-static void IRAM_ATTR update_ratio()
-{
-    if (control) {
-        int accumulate = steady && (abs(read_sensor() - target) > STEADY_LIMIT);
-        unsigned int power = run_fuzzy_step(
-            read_sensor(),
-            read_ambient(),
-            accumulate);
-
-        power_ratio[0] = power;
-        power_ratio[1] = PERIOD - power;
-    }
 }
 
 static void IRAM_ATTR check_steady_state()

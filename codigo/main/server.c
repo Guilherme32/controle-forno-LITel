@@ -22,24 +22,59 @@ static const char* json_type = "application/json";
 // Static functions declaration -------------------------------------------------------------------
 // Static helper functions ----------------------------------------------------
 
+/**
+* Envia um arquivo por partes. Eh necessario pois alguns arquivos sao maiores
+* do que o espaco disponivel da DRAM do esp.
+*/
 static esp_err_t send_chunked(httpd_req_t* req, const char* filename);
+
+/**
+* Extrai parametros enviados junto ao uri. Esses sao aqueles que vem no formato
+* "url?key1=value1&key2=value2".
+*/
 static int get_param(const char* uri, const char* key, char* value);
+
+/** Confere se um arquivo existe no sistema de armazenamento SPIFFS. */
 static bool file_exists(char* filename);
+
+/** Retorna o tipo MIME de um arquivo para enviar no cabecalho da resposta http. */
 static const char* get_type(char* filename);
+
+/** Extrai um valor de uma string json. */
 static int parse_json_data(const char* json, const char* key, char* out_value);
 
 
 // Handler functions ----------------------------------------------------------
 
+/** Envia o index.html */
 static esp_err_t index_handler(httpd_req_t* req);
+
+/** Faz o recebimento de um arquivo e o armazena com o sistema de arquivos SPIFFS. */
 static esp_err_t upload_handler(httpd_req_t* req);
+
+/** Envia qualquer arquivo que esteja armazenado no sistema de arquivos SPIFFS. */
 static esp_err_t static_handler(httpd_req_t* req);
 
+
+/** Envia um json contendo as informacoes do WiFi access point do esp. */
 static esp_err_t api_get_ap_info_handler(httpd_req_t* req);
+
+/** Envia um json contendo as informacoes do WiFi station do esp. */
 static esp_err_t api_get_sta_info_handler(httpd_req_t* req);
+
+/** Recebe e atualiza as inforcacoes do WiFi station do esp. */
 static esp_err_t api_post_sta_info_handler(httpd_req_t* req);
+
+/**
+* Envia um json contendo todas as informacoes do controlador (aquelas no struct
+* definido em controller.h).
+*/
 static esp_err_t api_get_controller_info_handler(httpd_req_t* req);
+
+/** Recebe e atualiza a relacao de potencia do sistema. Termina o modo de controle. */
 static esp_err_t api_send_power_handler(httpd_req_t* req);
+
+/** Recebe e atualiza o set point do sistema. Inicia o modo de controle. */
 static esp_err_t api_send_set_point_handler(httpd_req_t* req);
 
 

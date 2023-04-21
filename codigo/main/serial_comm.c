@@ -18,9 +18,26 @@ static int commands_len;
 
 // Static functions declaration -------------------------------------------------------------------
 
+/** Checa a mensagem recebida ate o momento com todos os comandos disponiveis. */
 static bool check_message(char* message);
+
+/** Coloca um caracter no final de uma string. */
 static void append(char new_char, char* str);
+
+/**
+* O comando para enviar a ajuda de todos os comandos disponiveis pela serial. A
+* assinatura da funcao segue o padrao exigido para todos os comandos.
+* @param command A string com o texto a ser avaliado como comando. Sera aceito
+*                para "help"
+* @return true se o comando for aceito, false caso contrario
+*/
 static bool help(char* message);
+
+/**
+* Printa (envia por serial) a ajuda para o comando help. A assinatura da funcao
+* segue o padrao exigido para todas as ajudas de comando.
+* @param prefix O prefixo utilizado para os comandos
+*/
 static void help_help(char prefix);
 
 
