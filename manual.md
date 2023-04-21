@@ -1,11 +1,11 @@
 # Manual de Referência do Sistema de Controle Do Forno LITel
 
 O sistema de controle foi desenvolvido com um microcontrolador, um esp8266,
-programado em c com uso do sdk da fabricante com sistema operacional
-[ESP8266 RTOS SDK](https://github.com/espressif/ESP8266_RTOS_SDK). Para o
-desenvolvimento da placa de circuito impresso (PCB), foi utilizado o [KiCad]
-(https://www.kicad.org), um programa de Automação de Design Eletrônico (EDA)
-open source.
+programado em c com uso do sdk da fabricante com sistema operacional [ESP8266
+RTOS SDK](https://github.com/espressif/ESP8266_RTOS_SDK). Para o desenvolvimento
+da placa de circuito impresso (PCB), foi utilizado o
+[KiCad](https://www.kicad.org), um programa de Automação de Design Eletrônico
+(EDA) open source.
 
 A parte física pode ser dividida em algumas seções, que foram também separadas
 para maior clareza no esquemático do circuito (kicad/projeto/projeto.kicad_sch):
