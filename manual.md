@@ -116,11 +116,11 @@ O código para automatizar o envio dos arquivos web para o esp está em codigo/
 helpers.
 
 O software embarcado foi todo desenvolvido para ser concorrente, por meio do
-sistema operacional FreeRTOS, embutido no [SDK utilizado](https://github.com/
-espressif/ESP8266_RTOS_SDK), a esp-idf (SDK da fabricante). Cada parte do
-sistema foi implementada em um arquivo .c separado, e todas são inicializadas
-no main.c. Para os sistemas que dependem de uma task, essas também são criadas
-no main.
+sistema operacional FreeRTOS, embutido no
+[SDK utilizado](https://github.com/espressif/ESP8266_RTOS_SDK), a esp-idf
+(SDK da fabricante). Cada parte do sistema foi implementada em um arquivo .c
+separado, e todas são inicializadas no main.c. Para os sistemas que dependem de
+uma task, essas também são criadas no main.
 
 > Para mais detalhes em qualquer código, basta abrir e ler os comentários e
 documentações das funções. As documentações se encontram nos headers (.h) para
@@ -202,12 +202,11 @@ X = 3, Y = 2
 Essa parte é a que de fato implementa o sistema de controle. Ela implementa,
 como o nome sugere, um controlador de lógica difusa (Fuzzy Logic Controller
 - FLC). O controlador foi baseado no de primeira ordem utilizado no trabalho
-original de controle do forno ([TCC de Leonardo Serapião](https://www.ufjf.br/
-mecanica/ files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-
-Ara%c3%bajo- Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)). Controladores difusos
-possuem bom desempenho para controle de sistemas não lineares, e com possíveis
-perturbações externas, que é exatamente a situação do controle de temperatura de
-um forno.
+original de controle do forno
+([TCC de Leonardo Serapião](https://www.ufjf.br/mecanica/ files/2016/07/Trabalho-de-Conclus%c3%a3o-de-Curso-Leonardo-Ara%c3%bajo- Serapi%c3%a3o-Engenharia-Mec%c3%a2nica.pdf)).
+Controladores difusos possuem bom desempenho para controle de sistemas não
+lineares, e com possíveis perturbações externas, que é exatamente a situação do
+controle de temperatura de um forno.
 
 A lógica difusa funciona de forma parecida com uma lógica digital, porém com
 saltos suaves entre variáveis. As variáveis difusa podem assumir valores entre
